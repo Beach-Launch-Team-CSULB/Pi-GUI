@@ -1,7 +1,7 @@
 import tkinter as tk # Import tkinter GUI library
 from tkinter import font as tkFont  # for font size
 # from typing import runtime_checkable
-import serial # Import serial library for python connect with arduino (do pip install pyserial on consolepip)
+# import serial # Import serial library for python connect with arduino (do pip install pyserial on consolepip)
 import can # Import CAN library (do python pip install python-can)
 
 # Root for application //////////////////////////////////////////////////////////////////////////////////////
@@ -10,79 +10,79 @@ root = tk.Tk()
 # Functions /////////////////////////////////////////////////////////////////////////////////////////////////
 # TOP FRAME FUNCTIONS-----------------------------
 def telemetryNodeReset():
-    pass
+    print("Telemetry Node Reset")
 
 def upperPropSystemNodeReset():
-    pass
+    print("upper Prop System Node Reset")
 
 def EngineNodeReset():
-    pass
+    print("Engine Node Reset")
 
 def PadGroundNodeReset():
-    pass
+    print("Pad Ground Reset")
 
 # LEFT FRAME FUNCTIONS----------------------------
 def testFunction():
-    pass
+    print("Test Function")
 
 def purgeFunction():
-    pass
+    print("Purge Function")
 
 def hiPressPressArmFunction():
-    pass
+    print("Hi Press Press Arm Function")
 
 def hiPressPressurizeFunction():
-    pass
+    print("Hi Press Pressurize Function")
 
 def takePressArmFunction():
-    pass
+    print("Take Press Arm Function")
 
 def tankPressurizeFunction():
-    pass
+    print("Tank Pressurize Function")
 
 def fireArmFunction():
-    pass
+    print("Fire Arm Function")
 
 def FIREFunction():
-    pass
+    print("FIRE Function")
 
 # CENTER FRAME FUNCTIONS--------------------------
 def HPFunction():
-    pass
+    print("HP Function")
 
 def HVFunction():
-    pass
+    print("HV Function")
 
 def LDRFunction():
-    pass
+    print("LDR Function")
 
 def FDRFunction():
-    pass
+    print("FDR Function")
 
 def LDVFunction():
-    pass
+    print("LDV Function")
 
 def FDVFunction():
-    pass
+    print("FDV Function")
 
 def LVFunction():
-    pass
+    print("LV Function")
 
 def FVFunction():
-    pass
+    print("FV Function")
 
 def LMVFunction():
-    pass
+    print("LMV Function")
 
 def FMVFunction():
-    pass
+    print("FMV Function")
 
 # BOTTOM FRAME FUNCTIONS---------------------------
 def ventFunction():
-    pass
+    print("Vent Function")
 
 def abortFunction():
-    pass
+    print("Abort Function")
 
 # Create size for GUI window ////////////////////////////////////////////////////////////////////////////////
 # Window size presets
