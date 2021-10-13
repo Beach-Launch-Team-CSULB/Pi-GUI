@@ -259,9 +259,9 @@ LV = tk.Button(centerFrame, text="LV", command=lambda: LVFunction()) # LV Button
 LV.place(relx=0.375,rely=0.03, relwidth=0.06, relheight=0.12)
 FV = tk.Button(centerFrame, text="FV", command=lambda: FVFunction()) # FV Button
 FV.place(relx=0.375,rely=0.77, relwidth=0.06, relheight=0.12)
-LMV = tk.Button(centerFrame, text="LDV", command=lambda: LMVFunction()) # LDV Button
+LMV = tk.Button(centerFrame, text="LMV", command=lambda: LMVFunction()) # LDV Button
 LMV.place(relx=0.775,rely=0.3, relwidth=0.06, relheight=0.12)
-FMV = tk.Button(centerFrame, text="FDV", command=lambda: FMVFunction()) # FDV Button
+FMV = tk.Button(centerFrame, text="FMV", command=lambda: FMVFunction()) # FDV Button
 FMV.place(relx=0.67,rely=0.3, relwidth=0.06, relheight=0.12)
 
 # CREATE BOTTOM FRAME (Buttons)-----------------------------------------------------
@@ -283,9 +283,6 @@ abortButton.place(relx=3/4, rely=0, relwidth=1/4, relheight=1)
 #Create group 2 frame
 group2ModeFrame = tk.Frame(root, bg="Blue", bd=5)
 group2ModeFrame.place(relx=3/4, rely=0, relwidth=1/4, relheight=1)
-
-# Realtime stuff
-# root.after(1, randomNumber)
 
 # Start window--------------------------------------------------------------------------------------------
 root.state('zoomed') # Maximize window
