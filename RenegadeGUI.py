@@ -59,15 +59,20 @@ class Main:
 
 
         # Start window--------------------------------------------------------------------------------------------
-        root.attributes("-zoomed", True)
+#         root.attributes("-zoomed", True) #fullscreen except taskbars on startup
+        root.attributes("-fullscreen", True) #complete fullscreen on startup
+#         root.bind("<Escape>", lambda event: root.attributes("-fullscreen", False))
+        root.bind("<Escape>", lambda event:root.destroy()) #binds escape key to killing the window
+        
         root.mainloop()
-
+        
+        
 
 
 class TopFrame:
     def __init__(self, parent):
         topFrame = tk.Frame(parent, bg="black", bd=5)
-        topFrame.place(relx=0.39, rely=0, relwidth=.8, relheight=0.2, anchor="n")
+        topFrame.place(relx=0.405, rely=0, relwidth=.825, relheight=0.2, anchor="n")
 
         telemetryFrame = self.TelemetryNode(topFrame)
         upperPropSystemFrame = self.UpperPropSystemNode(topFrame)
@@ -92,7 +97,7 @@ class TopFrame:
             nodeState = tk.Label(telemetryframe, text="poo", bg="black", fg="white")
             nodeState.place(relx=2 / 3, rely=2 / 3, relwidth=(1 / 3), relheight=1 / 3)
 
-            resetButton = tk.Button(telemetryframe, text="Reset", command=lambda: Reset(), font=("Verdana", 13),
+            resetButton = tk.Button(telemetryframe, text="Reset", command=lambda: Reset(), font=("Verdana", 10),
                                     fg='black', bg='white')
             resetButton.place(relx=3 / 4, rely=0, relwidth=1 / 4, relheight=1 / 3)
 
@@ -114,7 +119,7 @@ class TopFrame:
             nodeState = tk.Label(upperPropSystemframe, text="pee", bg="black", fg="white")
             nodeState.place(relx=2 / 3, rely=2 / 3, relwidth=(1 / 3), relheight=1 / 3)
 
-            resetButton = tk.Button(upperPropSystemframe, text="Reset", command=lambda: Reset(), font=("Verdana", 13),
+            resetButton = tk.Button(upperPropSystemframe, text="Reset", command=lambda: Reset(), font=("Verdana", 10),
                                     fg='black', bg='white')
             resetButton.place(relx=3 / 4, rely=0, relwidth=1 / 4, relheight=1 / 3)
 
@@ -136,7 +141,7 @@ class TopFrame:
             nodeState = tk.Label(engineframe, text="poopee", bg="black", fg="white")
             nodeState.place(relx=2 / 3, rely=2 / 3, relwidth=(1 / 3), relheight=1 / 3)
 
-            resetButton = tk.Button(engineframe, text="Reset", command=lambda: Reset(), font=("Verdana", 13),
+            resetButton = tk.Button(engineframe, text="Reset", command=lambda: Reset(), font=("Verdana", 10),
                                     fg='black', bg='white')
             resetButton.place(relx=3 / 4, rely=0, relwidth=1 / 4, relheight=1 / 3)
 
@@ -158,7 +163,7 @@ class TopFrame:
             nodeState = tk.Label(padGroundframe, text="peepoo", bg="black", fg="white")
             nodeState.place(relx=2 / 3, rely=2 / 3, relwidth=(1 / 3), relheight=1 / 3)
 
-            resetButton = tk.Button(padGroundframe, text="Reset", command=lambda: Reset(), font=("Verdana", 13),
+            resetButton = tk.Button(padGroundframe, text="Reset", command=lambda: Reset(), font=("Verdana", 10),
                                     fg='black', bg='white')
             resetButton.place(relx=3 / 4, rely=0, relwidth=1 / 4, relheight=1 / 3)
 
@@ -168,7 +173,7 @@ class LeftFrame:
 
     def __init__(self, parent):
         leftFrame = tk.Frame(parent, bg="grey", bd=5)
-        leftFrame.place(relx=0.025, rely=1/5, relwidth=1 / 10, relheight=0.8)
+        leftFrame.place(relx=0.0001, rely=1/5, relwidth=.1, relheight=0.8)
 
         # Data needed to setup the button
         # [ State Name, State ID , commandID, commandOFF , commandON]
@@ -189,8 +194,7 @@ class LeftFrame:
         def __init__(self, parent, args):
             self.args = args
             self.Button = tk.Button(parent, text=self.args[0], command=lambda: self.StateActuaction(),
-                                    font=("Verdana", 13),
-                                    fg='red', bg='black')
+                                    font=("Verdana", 11), fg='red', bg='black')
             self.Button.place(relx=0, rely=((1 / 8) * (self.args[1] - 2)), relwidth=1, relheight=1 / 8)
             self.Status = False
             self.commandID = self.args[2]
@@ -202,8 +206,8 @@ class LeftFrame:
             if not self.Status:
                 self.Status = True
                 self.Button = tk.Button(self.parent, text=self.args[0], command=lambda: self.StateActuaction(),
-                                        font=("Verdana", 13), fg='green', bg='black')
-                self.Button.place(relx=0.1, rely=((1 / 8) * (self.args[1] - 2)), relwidth=.8, relheight=1 / 8)
+                                        font=("Verdana", 11), fg='green', bg='black')
+                self.Button.place(relx=0, rely=((1 / 8) * (self.args[1] - 2)), relwidth=1, relheight=1 / 8)
                 msg = can.Message(arbitration_id=self.commandID, data=[self.commandON], is_extended_id=False)
                 bus.send(msg)
                 if self.args[0] == "Test":
@@ -211,8 +215,8 @@ class LeftFrame:
             else:
                 self.Status = False
                 self.Button = tk.Button(self.parent, text=self.args[0], command=lambda: self.StateActuaction(),
-                                        font=("Verdana", 13), fg='red', bg='black')
-                self.Button.place(relx=.1, rely=((1 / 8) * (self.args[1] - 2)), relwidth=.8, relheight=1 / 8)
+                                        font=("Verdana", 11), fg='red', bg='black')
+                self.Button.place(relx=0, rely=((1 / 8) * (self.args[1] - 2)), relwidth=1, relheight=1 / 8)
 
                 # self.Button.place(relx=0, rely=((1 / 8) * self.args[1]), relwidth=1, relheight=1 / 8)
                 msg = can.Message(arbitration_id=self.commandID, data=[self.commandOFF], is_extended_id=False)
@@ -382,7 +386,7 @@ class TimeFrame:
 class RightFrame:
     def __init__(self, parent):
         rightFrame = tk.Frame(parent, bg="grey", bd=5)
-        rightFrame.place(relx=.825, rely=.07, relwidth=.175, relheight=.95)
+        rightFrame.place(relx=.815, rely=.07, relwidth=.19, relheight=.95)
 
         graph1 = self.Graph1(rightFrame)
         graph2 = self.Graph2(rightFrame)
@@ -428,9 +432,9 @@ class RightFrame:
             canvas._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
 
-f1 = Figure(figsize = (5,5), dpi = 100)
-f2 = Figure(figsize = (5,5), dpi = 100)
-f3 = Figure(figsize = (5,5), dpi = 100)
+f1 = Figure(figsize = (2,5), dpi = 100)
+f2 = Figure(figsize = (3,5), dpi = 100)
+f3 = Figure(figsize = (4,5), dpi = 100)
 
 a1 = f1.add_subplot(111)
 a2 = f2.add_subplot(111)
