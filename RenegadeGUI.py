@@ -16,6 +16,13 @@ import can
 style.use('dark_background')
 bus = can.interface.Bus(channel= 'can0', bustype='socketcan_ctypes')
 
+# PGSEbuttonOFF = Image.open("/home/pi/Documents/GUI Images/SV circle symbol red png.png")
+# PGSEbuttonON = Image.open("/home/pi/Documents/GUI Images/SV circle symbol green png.png")
+# TanksGraphic = Image.open("/home/pi/Documents/GUI Images/Tank Clipart.png")
+# RenegadeLOGO = Image.open("/home/pi/Documents/GUI Images/RenegadeLogo.png")
+# RenegadeLOGOSAD = Image.open("/home/pi/Documents/GUI Images/Sad Renegade LOGO.png")
+
+
 class Main:
     def __init__(self):
 
@@ -34,19 +41,38 @@ class Main:
 
         # Getting the image to show wasnt working when inside the class, so i brought it out to main class
         centerFrame = tk.Frame(group1ModeFrame, bg="Black")
-        centerFrame.place(relx=0.14, rely=0.2, relwidth=0.65, relheight=0.65)
-        # Put schematic draft for layout
-##        schematicImage = tk.PhotoImage(file="Images\GUI Prop Layout.png")
-##        schematicLabel = tk.Label(centerFrame, image=schematicImage, bg = "black")
-##        schematicLabel.place(relx=0, rely=0,relwidth=1, relheight=1)
+        centerFrame.place(relx=0.11, rely=0.2, relwidth=0.7, relheight=0.65)
+        ##Put schematic draft for layout
+
         center = CenterFrame(centerFrame)
 
         bottomFrame = tk.Frame(group1ModeFrame, bg="Black")
         bottomFrame.place(relx=0.14, rely=0.85, relwidth=0.65, relheight=0.2)
         # Put schematic draft for layout
-##        schematicImage1 = tk.PhotoImage(file="Images\qqq123.png")
-##        schematicLabel1 = tk.Label(bottomFrame, image=schematicImage1, bg = "black")
-##        schematicLabel1.place(relx=0.45, rely=0)
+#         RenegadeLOGOSAD = tk.PhotoImage(file="/home/pi/Documents/GUI Images/Sad Renegade LOGO.png")
+#         logo2 = tk.Label(bottomFrame, image=RenegadeLOGOSAD, bg = "black")
+#         logo2.place(relx=0.315, rely='-.1250')
+        
+        RenegadeLOGO = tk.PhotoImage(file="/home/pi/Documents/GUI Images/RenegadeLogoSmall.png")
+        logo1 = tk.Label(bottomFrame, image=RenegadeLOGO, bg = "black")
+        logo1.place(relx=.415, rely='-.1250')
+        
+        engineart = tk.PhotoImage(file="/home/pi/Documents/GUI Images/Engine Clipart smol.png")
+        logo1 = tk.Label(centerFrame, image=engineart, bg = "black")
+        logo1.place(relx=.735, rely=.40)
+        
+        LOXTankart = tk.PhotoImage(file="/home/pi/Documents/GUI Images/TankPlainClipart.png")
+        logo1 = tk.Label(centerFrame, image=LOXTankart, bg = "black")
+        logo1.place(relx=.45, rely=.15)
+        
+        FuelTankart = tk.PhotoImage(file="/home/pi/Documents/GUI Images/TankPlainClipart.png")
+        logo1 = tk.Label(centerFrame, image=FuelTankart, bg = "black")
+        logo1.place(relx=.45, rely=.6)
+        
+        COPVTankart = tk.PhotoImage(file="/home/pi/Documents/GUI Images/TankPlainClipart.png")
+        logo1 = tk.Label(centerFrame, image=COPVTankart, bg = "black")
+        logo1.place(relx=.0, rely=.0)
+        
         bottom = BottomFrame(bottomFrame)
 
         rightFrame = RightFrame(group1ModeFrame)
@@ -59,14 +85,12 @@ class Main:
 
 
         # Start window--------------------------------------------------------------------------------------------
-#         root.attributes("-zoomed", True) #fullscreen except taskbars on startup
-        root.attributes("-fullscreen", True) #complete fullscreen on startup
-#         root.bind("<Escape>", lambda event: root.attributes("-fullscreen", False))
+        root.attributes("-zoomed", True) #"zoomed" is fullscreen except taskbars on startup, "fullscreen" is no taskbars true fullscreen
         root.bind("<Escape>", lambda event:root.destroy()) #binds escape key to killing the window
+        root.bind("<F11>", lambda event: root.attributes("-fullscreen", True)) #switches from zoomed to fullscreen
+        root.bind("<F12>", lambda event: root.attributes("-fullscreen", False)) #switches from fullscreen to zoomed
         
         root.mainloop()
-        
-        
 
 
 class TopFrame:
@@ -248,48 +272,48 @@ class CenterFrame:
         # Data needed to setup the button
         # [ Valve Name, relx ,rely , State ID , commandID, commandOFF , commandON]
         centerButtons = [
-            ['HP', .15, .85, 16, 2, 32, 33],
-            ['HV', .25, .77, 17, 2, 34, 35],
-            ['LV', .475, .01, 18, 3, 36, 37],
-            ['LDR', .2, .45, 19, 3, 38, 39],
-            ['LDV',.35, .45, 20, 3, 40, 41],
-            ['FV', .475, .57, 21, 3, 42, 43],
-            ['FDR', .2, .65, 22, 3, 44, 45],
-            ['FDV',.35, .65, 17, 23, 3, 46, 47],
-            ['LMV', .575, 0.475, 24, 2, 48, 49],
-            ['FMV', .575, .3, 25, 2, 50, 51],
+            ['HP', 0, .65, 16, 2, 32, 33],
+            ['HV', .075, .825, 17, 2, 34, 35],
+            ['LV', .325, .025, 18, 3, 36, 37],
+            ['LDR', .15, .15, 19, 3, 38, 39],
+            ['LDV', .225, .025, 20, 3, 40, 41],
+            ['FV', .325, .8, 21, 3, 42, 43],
+            ['FDR', .15, .65, 22, 3, 44, 45],
+            ['FDV', .225, .8, 17, 23, 3, 46, 47],
+            ['LMV', .8, 0.15, 24, 2, 48, 49],
+            ['FMV', .65, .15, 25, 2, 50, 51],
         ]
 
         for button in centerButtons:
             self.Button(parent, button)
 
         PGSESensors = [
-            ["COPV 1", 0.125, 0.15, 0.05,0.05],
-            ["COPV 2", 0.125, 0.25, 0.05,0.05],
-            ["Fuel", 0.475, 0.75, 0,0.05],
-            ["Lox", 0.475, 0.15, 0,0.05],
-            ["Lox Dome", 0.25, 0.375, 0.05,0.05],
-            ["Fuel Dome", 0.25, 0.6, 0.05,0.05],
-            ["Main Valve", 0.575, 0.375, 0.05,0.05],
-            ["Fuel Prop Inlet", .75, 0.35, 0.05,0.05],
-            ["LOx Prop Inlet", .675, 0.45, 0.05,0.05],
-            ["LOx TC1: ", .35, 0.025, 0.05,0.05],
-            ["LOx TC2: ", .35, 0.15, 0.05, 0.05],
-            ["LOx TC3: ", .35, 0.275, 0.05, 0.05]
+            ["COPV\n 1", 0, 0.05, 0.025,0.08],
+            ["COPV\n 2", 0, 0.15, 0.025,0.08],
+            ["Fuel", 0.475, 0.75, 0,0.04],
+            ["Lox", 0.475, 0.15, 0,0.04],
+            ["Lox\n Dome", 0.25, 0.3, 0.05,0.08],
+            ["Fuel\n Dome", 0.25, 0.5, 0.05,0.08],
+            ["MV\n Pneumatic", 0.875, 0.005, 0.05,0.08],
+            ["Fuel\n Prop Inlet", .65, 0.25, 0.025,0.08],
+            ["LOx\n Prop Inlet", .8125, 0.25, 0.025,0.08],
+            ["---: ", .55, 0.195, 0.03, 0.00],
+            ["---: ", .55, 0.295, 0.03, 0.00],
+            ["---: ", .55, 0.395, 0.03, 0.00]
 
         ]
 
         engineSensors = [
-            ["Fuel Inlet", .575, .1, 0.025,0.05],
-            ["Fuel Injector", .7, .1, 0.05,0.05],
-            ["LOx Injector", .85, .1, 0.05,0.05],
-            ["Pc Chamber 1", .55, .01, 0.05,0.05],
-            ["PC Chamber 2", .7, .01, 0.05,0.05],
-            ["Pc Chamber 3", .85, .01, 0.05,0.05],
-            ["TC Chamber ", .85, .2, 0.05,0.05],
-            ["LC1: ", .625, .7, 0.05,0],
-            ["LC2:", .625, .8, 0.05,0],
-            ["LC3", .625, .9, 0.05,0]
+            ["Fuel Inlet", .86, .38, 0.05,0.04],
+            ["Fuel Injector", .86, .46, 0.05,0.04],
+            ["LOX Injector", .86, .54, 0.05,0.04],
+            ["Pc Chamber 1", .86, .62, 0.05,0.04],
+            ["Pc Chamber 2", .86, .70, 0.05,0.04],
+            ["Pc Chamber 3", .86, .78, 0.05,0.04],
+            ["Temp\n ChamberExt", .86, .86, 0.05,0.08],
+            ["LC1: ", .725, .86, 0.065,0],
+            ["LC2: ", .725, .90, 0.065,0],
+            ["LC3: ", .725, .94, 0.065,0]
         ]
 
         self.sensorList = []
@@ -308,9 +332,9 @@ class CenterFrame:
 
     class PGSESensor():
         def __init__(self, parent, args):
-            self.label = tk.Label(parent, text=args[0], font=("Verdana", 13), fg='white', bg='black')
+            self.label = tk.Label(parent, text=args[0], font=("Verdana", 10), fg='white', bg='black')
             self.label.place(relx=args[1], rely=args[2], anchor="nw")
-            self.ReadingLabel = tk.Label(parent, text="N/A", font=("Verdana", 13), fg='orange', bg='black')
+            self.ReadingLabel = tk.Label(parent, text="N/A", font=("Verdana", 10), fg='orange', bg='black')
             self.ReadingLabel.place(relx=args[1]+args[3], rely=args[2] + args[4], anchor="nw")
             # self.SensorID = args[3]
 
@@ -320,9 +344,9 @@ class CenterFrame:
 
     class EngineSensor():
         def __init__(self, parent, args):
-            self.label = tk.Label(parent, text=args[0], font=("Verdana", 13), fg='white', bg='black')
+            self.label = tk.Label(parent, text=args[0], font=("Verdana", 10), fg='white', bg='black')
             self.label.place(relx=args[1], rely=args[2], anchor="nw")
-            self.ReadingLabel = tk.Label(parent, text="N/A", font=("Verdana", 13), fg='orange', bg='black')
+            self.ReadingLabel = tk.Label(parent, text="N/A", font=("Verdana", 10), fg='orange', bg='black')
             self.ReadingLabel.place(relx=args[1] + args[3], rely=args[2] + args[4], anchor="nw")
             # self.SensorID = args[3]
 
@@ -374,8 +398,12 @@ class CenterFrame:
                 self.Button.place(relx=self.args[1], rely=self.args[2])
                 msg = can.Message(arbitration_id=self.commandID, data=[self.commandOFF], is_extended_id=False)
                 bus.send(msg)
+                
+
+  
             return 0
 
+    
 class TimeFrame:
     def __init__(self, parent):
         timeFrame = tk.Frame(parent, bg="black", bd=5)
@@ -386,7 +414,7 @@ class TimeFrame:
 class RightFrame:
     def __init__(self, parent):
         rightFrame = tk.Frame(parent, bg="grey", bd=5)
-        rightFrame.place(relx=.815, rely=.07, relwidth=.19, relheight=.95)
+        rightFrame.place(relx=.815, rely=.07, relwidth=.1875, relheight=.95)
 
         graph1 = self.Graph1(rightFrame)
         graph2 = self.Graph2(rightFrame)
@@ -395,7 +423,7 @@ class RightFrame:
     class Graph1:
         def __init__(self, parent):
             graphframe = tk.Frame(parent, bg="grey", bd=5)
-            graphframe.place(relx=0, rely=0, relwidth=1, relheight=(1 / 3.1))
+            graphframe.place(relx= '-0.025', rely=0, relwidth=1.06, relheight=(1 / 3.1))
 
             canvas = FigureCanvasTkAgg(f1, graphframe)
             canvas.draw()
@@ -408,7 +436,7 @@ class RightFrame:
     class Graph2:
         def __init__(self, parent):
             graphframe = tk.Frame(parent, bg="grey", bd=5)
-            graphframe.place(relx=0, rely=(1 / 3 + 0.0015) * 1, relwidth=1, relheight=(1 / 3.1))
+            graphframe.place(relx= '-0.025', rely=(1 / 3 + 0.0015) * 1, relwidth=1.06, relheight=(1 / 3.1))
 
             canvas = FigureCanvasTkAgg(f2, graphframe)
             canvas.draw()
@@ -421,7 +449,7 @@ class RightFrame:
     class Graph3:
         def __init__(self, parent):
             graphframe = tk.Frame(parent, bg="grey", bd=5)
-            graphframe.place(relx=0, rely=(1 / 3 + 0.0015) * 2, relwidth=1, relheight=(1 / 3.1))
+            graphframe.place(relx= '-0.025', rely=(1 / 3 + 0.0015) * 2, relwidth=1.06, relheight=(1 / 3.1))
 
             canvas = FigureCanvasTkAgg(f3, graphframe)
             canvas.draw()
@@ -432,9 +460,9 @@ class RightFrame:
             canvas._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
 
-f1 = Figure(figsize = (2,5), dpi = 100)
-f2 = Figure(figsize = (3,5), dpi = 100)
-f3 = Figure(figsize = (4,5), dpi = 100)
+f1 = Figure(figsize = (5,5), dpi = 55)
+f2 = Figure(figsize = (5,5), dpi = 55)
+f3 = Figure(figsize = (5,5), dpi = 55)
 
 a1 = f1.add_subplot(111)
 a2 = f2.add_subplot(111)
