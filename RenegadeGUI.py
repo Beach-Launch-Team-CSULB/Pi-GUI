@@ -13,17 +13,19 @@ from PIL import Image, ImageTk
 # All Can bus lines will have the bottom dash lines to help show which lines to
 # uncomment when on Pi or comment out when on a computer
 import can  #/////////////////////////////////////////////////////////////////////////
+# from CanSend import CanSend
+from CanRecieve import CanRecieve
 bus = can.interface.Bus(channel= 'can0', bustype='socketcan_ctypes')  #///////////////
 
 # The style of graph matplotlib will be using
 style.use('dark_background')
 
-# PGSEbuttonOFF = Image.open("/home/pi/Documents/GUI Images/SV circle symbol red png.png")
-# PGSEbuttonON = Image.open("/home/pi/Documents/GUI Images/SV circle symbol green png.png")
+# PGSEbuttonOFF = Image.open("GUI Images/SV circle symbol red png.png")
+# PGSEbuttonON = Image.open("GUI Images/SV circle symbol green png.png")
 
 # Main Class, Everything is controlled from here
 class Main:
-    def __init__(self):
+    def run(self):
         # Root for application -----------------------------------------------------------------------------------
         root = tk.Tk()
 
@@ -72,27 +74,27 @@ class Main:
 #         logo2 = tk.Label(bottomFrame, image=RenegadeLOGOSAD, bg = "black")
 #         logo2.place(relx=0.315, rely='-.1250')        
         
-        RenegadeLOGO = tk.PhotoImage(file="/home/pi/Documents/GUI Images/RenegadeLogoSmall.png")
+        RenegadeLOGO = tk.PhotoImage(file="GUI Images/RenegadeLogoSmall.png")
         logo1 = tk.Label(bottomFrame, image=RenegadeLOGO, bg = "black")
         logo1.place(relx=.415, rely='-.1250')
         
-        engineart = tk.PhotoImage(file="/home/pi/Documents/GUI Images/Engine Clipart smol.png")
+        engineart = tk.PhotoImage(file="GUI Images/Engine Clipart smol.png")
         logo2 = tk.Label(centerFrame, image=engineart, bg = "black")
         logo2.place(relx=.735, rely=.40)
         
-        LOXTankart = tk.PhotoImage(file="/home/pi/Documents/GUI Images/TankPlainClipart.png")
+        LOXTankart = tk.PhotoImage(file="GUI Images/TankPlainClipart.png")
         logo3 = tk.Label(centerFrame, image=LOXTankart, bg = "black")
         logo3.place(relx=.45, rely=.21)
         
-        FuelTankart = tk.PhotoImage(file="/home/pi/Documents/GUI Images/TankPlainClipart.png")
+        FuelTankart = tk.PhotoImage(file="GUI Images/TankPlainClipart.png")
         logo4 = tk.Label(centerFrame, image=FuelTankart, bg = "black")
         logo4.place(relx=.45, rely=.615)
         
-        COPVTankart = tk.PhotoImage(file="/home/pi/Documents/GUI Images/TankPlainClipart.png")
+        COPVTankart = tk.PhotoImage(file="GUI Images/TankPlainClipartCOPV.png")
         logo5 = tk.Label(centerFrame, image=COPVTankart, bg = "black")
         logo5.place(relx=.0, rely=.0)
         
-        DomeRegart = tk.PhotoImage(file="/home/pi/Documents/GUI Images/AquaDomeReg Clipart.png")
+        DomeRegart = tk.PhotoImage(file="GUI Images/AquaDomeReg Clipart.png")
         logo6 = tk.Label(centerFrame, image=DomeRegart, bg = "black")
         logo6.place(relx=.25, rely=.185)
         logo7 = tk.Label(centerFrame, image=DomeRegart, bg = "black")
@@ -239,7 +241,7 @@ class LeftFrame:
     #     Purge: Dont really know
     #     High Press Press Arm: something about an arms, I thought Dan was into feet tbh
     #     High Press Pressurize: Allows pressure to go into the COPV
-    #     Tank Press Arm: I wonder if I can beat Dan in an Arm wrestle??? Right now yes I am soft and weak -Dan
+    #     Tank Press Arm: I wonder if I can beat Dan in an Arm wrestle??? Right now yes I am soft and weak -Dan When and where? - Pizza
     #     Tank Pressurize: Pressurizes the Tanks and allows the COPV to still recieve pressure to get back filled
     #     Fire Arm: My arms are starting to get tired or writing comments
     #     Fire: Boom Boom Time
@@ -373,9 +375,9 @@ class LeftFrame:
                                                 relwidth=1, relheight=1 / 9)
 
                     # Can Bus
-                    msg = can.Message(arbitration_id=self.commandID, data=[self.commandON], is_extended_id=False)  #////
+                    msg = can.Message(arbitration_id=self.commandID, data=[self.commandON], is_extended_id=False)  #//////////////////////////////////////////////////////
                     bus.send(msg)  #//////////////////////////////////////////////////////////////////////////////////
-
+#                     CanSend.Sendsomebullshit()
                     # Current state gets updated to be the previous state
                     LeftFrame.CurrState = self.prevState.args
 
@@ -395,6 +397,7 @@ class LeftFrame:
                     # Can Bus
                     msg = can.Message(arbitration_id=self.commandID, data=[self.commandON], is_extended_id=False)  #////
                     bus.send(msg)  #//////////////////////////////////////////////////////////////////////////////////
+#                     CanSend.Sendsomebullshit()
 
                     # Current State Gets updated
                     LeftFrame.CurrState = self.args
@@ -412,8 +415,10 @@ class LeftFrame:
                     self.Button = tk.Button(self.parent, text=self.args[0], command=lambda: self.StateActuaction(),
                                             font=("Verdana", 10), fg='green', bg='black')
                     self.Button.place(relx=0, rely=((1 / 9) * (self.args[1] - 1)) - 1 / 18, relwidth=1, relheight=1 / 9)
-                    # msg = can.Message(arbitration_id=self.commandID, data=[self.commandON], is_extended_id=False)////
-                    # bus.send(msg)//////////////////////////////////////////////////////////////////////////////////
+                    msg = can.Message(arbitration_id=self.commandID, data=[self.commandON], is_extended_id=False)#////
+                    bus.send(msg)#//////////////////////////////////////////////////////////////////////////////////
+#                     CanSend.Sendsomebullshit()
+
                 else:
                     # Disable Test mode
                     LeftFrame.TestState = False
@@ -422,6 +427,7 @@ class LeftFrame:
                     self.Button.place(relx=0, rely=((1 / 9) * (self.args[1] - 1)) - 1 / 18, relwidth=1, relheight=1 / 9)
                     msg = can.Message(arbitration_id=self.commandID, data=[self.commandOFF], is_extended_id=False)  #////
                     bus.send(msg)  #//////////////////////////////////////////////////////////////////////////////////
+#                     CanSend.Sendsomebullshit()
 
             return 0
 
@@ -495,6 +501,8 @@ class BottomFrame:
                     self.other.status = False
                 msg = can.Message(arbitration_id=self.commandID, data=[self.commandON], is_extended_id=False) # ////
                 bus.send(msg) # //////////////////////////////////////////////////////////////////////////////////////
+#                 CanSend.Sendsomebullshit()
+
             else:  # Turns off the state pressed
                 self.status = False
                 self.Button = tk.Button(self.parent, text=self.args[0], font=self.fontSize,
@@ -503,14 +511,21 @@ class BottomFrame:
                 self.Button.place(relx=self.args[1], rely=0, relheight=1, relwidth=1 / 4)
                 msg = can.Message(arbitration_id=self.commandID, data=[self.commandOFF], is_extended_id=False) # ////
                 bus.send(msg) # //////////////////////////////////////////////////////////////////////////////////////
+#                 CanSend.Sendsomebullshit()
 
                 # System state moved to standby
                 LeftFrame.CurrState = ["StandBy"]
 
             return 0
 
+class Canstuff:
+    def run(self):
+        while True:
+            print("Brandon is superior than Dan")
+            
 # Center Frame ------------------------------------------------------------------------------------------------------
 class CenterFrame:
+    currValveState = "0000000000"
     def __init__(self, parent):
         # Displays all the sensor readings and what the current valve actuation state is
         # Also allows user to actuate valves individually if test mode is enabled
@@ -526,26 +541,28 @@ class CenterFrame:
             ['FV', .375, .8, 21, 3, 42, 43],
             ['FDR', .15, .65, 22, 3, 44, 45],
             ['FDV', .225, .8, 17, 23, 3, 46, 47],
-            ['LMV', .8, 0.15, 24, 2, 48, 49],
-            ['FMV', .65, .15, 25, 2, 50, 51],
+            ['LMV', .815, 0.15, 24, 2, 48, 49],
+            ['FMV', .665, .15, 25, 2, 50, 51],
         ]
+
+        self.valvelist = []
 
         # Creates a button for each valve
         for valve in Valves:
-            self.Valve(parent, valve)
+            self.valvelist.append(self.Valve(parent, valve))
 
         Sensors = [
             ["COPV\n 1", 0, 0.05, 0.025,0.08],
             ["COPV\n 2", 0, 0.15, 0.025,0.08],
-            ["Fuel", 0.475, 0.75, 0,0.04],
-            ["Lox", 0.475, 0.15, 0,0.04],
+            ["Fuel Tank", 0.505, 0.575, 0.06,0.04],
+            ["Lox Tank", 0.505, 0.125, 0.06,0.04],
             ["Lox\n Dome", 0.305, 0.05, 0.02,0.08],
             ["Fuel\n Dome", 0.305, 0.7, 0.02,0.08],
             ["MV\n Pneumatic", 0.875, 0.005, 0.05,0.08],
             ["Fuel\n Prop Inlet", .65, 0.25, 0.025,0.08],
             ["LOx\n Prop Inlet", .8125, 0.25, 0.025,0.08],
-            ["---: ", .55, 0.225, 0.03, 0.00],
-            ["---: ", .55, 0.35, 0.03, 0.00],
+            ["---: ", .55, 0.245, 0.03, 0.00],
+            ["---: ", .55, 0.36, 0.03, 0.00],
             ["---: ", .55, 0.475, 0.03, 0.00],
             # Engine Sensors
             ["Fuel Inlet", .86, .38, 0.05,0.04],
@@ -562,7 +579,6 @@ class CenterFrame:
 
         # stores each sensor in the list
         self.sensorList = []
-
         # Instantiates each sensor in the Sensors list
         for sensor in Sensors:
             self.sensorList.append(self.Sensor(parent, sensor))
@@ -572,11 +588,17 @@ class CenterFrame:
 
     # Readings Refresher, Recursive Function
     def RefreshLabel(self):
+        #print(CanRecieve.ValveState)
         # for each sensor in the sensor list. refresh the label
         for sensor in self.sensorList:
             # calls the sensors label refresh function
             sensor.RefreshLabel()
-        # recalls this functino after 500 ms
+#         # recalls this functino after 500 ms
+#         if CanRecieve.ValveState != LeftFrame.currValveState:
+#             for i in CanRecieve.ValveState:
+#                 if CanRecieve.ValveState[i] != LeftFrame.currValveState[i]:            
+        #for valve in self.valvelist:
+            
         self.sensorList[1].ReadingLabel.after(250, self.RefreshLabel)
 
     # Instantiate Sensor
@@ -649,6 +671,8 @@ class CenterFrame:
                 self.Button.place(relx=self.args[1], rely=self.args[2])
                 msg = can.Message(arbitration_id=self.commandID, data=[self.commandON], is_extended_id=False) #/////
                 bus.send(msg) #///////////////////////////////////////////////////////////////////////////////////
+#                 CanSend.Sendsomebullshit()
+
             else:  # Vice versa
                 self.status = False
                 self.Button = tk.Button(self.parent, text=self.args[0], command=lambda: self.TwoFactorAuthentication(),
@@ -656,8 +680,12 @@ class CenterFrame:
                 self.Button.place(relx=self.args[1], rely=self.args[2])
                 msg = can.Message(arbitration_id=self.commandID, data=[self.commandOFF], is_extended_id=False) #/////
                 bus.send(msg) #///////////////////////////////////////////////////////////////////////////////////
-            return 0
+#                 CanSend.Sendsomebullshit()
 
+            return 0
+        
+        #def RefreshButton():
+            
     
 # Time Frame  ------------------------------------------------------------------------------------------------------
 class TimeFrame:
@@ -753,5 +781,27 @@ def animate(i):
     a2.plot(x1, y1)
     a3.clear()
     a3.plot(x1, y)
+    
 
-main = Main()
+            
+if __name__ == '__main__':
+    
+    GUI = Main()
+    GUIThread = Thread(target=GUI.run)
+    GUIThread.daemon = True
+    
+#     cansend = CanSend()
+#     cansendThread = Thread(target=cansend.run)
+#     cansendThread.daemon = True
+    
+    canrecieve = CanRecieve()
+    canrecieveThread = Thread(target=canrecieve.run)
+    canrecieveThread.daemon = True
+    
+    GUIThread.start()
+#     cansendThread.start()
+    canrecieveThread.start()
+
+#     LCan2 = Canstuff()
+#     LCan2Thread = Thread(target=LCan2.run)
+#     LCan2Thread.start()
