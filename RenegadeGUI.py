@@ -84,11 +84,11 @@ class Main:
         
         LOXTankart = tk.PhotoImage(file="GUI Images/TankPlainClipart.png")
         logo3 = tk.Label(centerFrame, image=LOXTankart, bg = "black")
-        logo3.place(relx=.45, rely=.21)
+        logo3.place(relx=.475, rely=.2)
         
         FuelTankart = tk.PhotoImage(file="GUI Images/TankPlainClipart.png")
         logo4 = tk.Label(centerFrame, image=FuelTankart, bg = "black")
-        logo4.place(relx=.45, rely=.615)
+        logo4.place(relx=.475, rely=.615)
         
         COPVTankart = tk.PhotoImage(file="GUI Images/TankPlainClipartCOPV.png")
         logo5 = tk.Label(centerFrame, image=COPVTankart, bg = "black")
@@ -552,8 +552,8 @@ class CenterFrame:
             self.valvelist.append(self.Valve(parent, valve))
 
         Sensors = [
-            ["COPV\n 1", 0, 0.05, 0.025,0.08],
-            ["COPV\n 2", 0, 0.15, 0.025,0.08],
+            ["COPV 1", 0.06, 0.0125, 0.075,0.00],
+            ["COPV 2", 0.06, 0.055, 0.075,0.00],
             ["Fuel Tank", 0.505, 0.575, 0.06,0.04],
             ["Lox Tank", 0.505, 0.125, 0.06,0.04],
             ["Lox\n Dome", 0.305, 0.05, 0.02,0.08],
@@ -561,9 +561,9 @@ class CenterFrame:
             ["MV\n Pneumatic", 0.875, 0.005, 0.05,0.08],
             ["Fuel\n Prop Inlet", .65, 0.25, 0.025,0.08],
             ["LOx\n Prop Inlet", .8125, 0.25, 0.025,0.08],
-            ["---: ", .55, 0.245, 0.03, 0.00],
-            ["---: ", .55, 0.36, 0.03, 0.00],
-            ["---: ", .55, 0.475, 0.03, 0.00],
+            ["---: ", .55, 0.225, 0.03, 0.00],
+            ["---: ", .55, 0.34, 0.03, 0.00],
+            ["---: ", .55, 0.455, 0.03, 0.00],
             # Engine Sensors
             ["Fuel Inlet", .86, .38, 0.05,0.04],
             ["Fuel Injector", .86, .46, 0.05,0.04],
