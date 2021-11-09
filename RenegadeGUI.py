@@ -4,12 +4,12 @@ import time
 import datetime
 import random
 from tkinter import font as tkFont  # for font size
-from matplotlib import pyplot as plt
-from matplotlib.figure import Figure
-import matplotlib.animation as animation
-from matplotlib import style
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
-from PIL import Image, ImageTk
+#from matplotlib import pyplot as plt
+#from matplotlib.figure import Figure
+#import matplotlib.animation as animation
+#from matplotlib import style
+#from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+#from PIL import Image, ImageTk
 # All Can bus lines will have the bottom dash lines to help show which lines to
 # uncomment when on Pi or comment out when on a computer
 import can  #/////////////////////////////////////////////////////////////////////////
@@ -18,7 +18,7 @@ from CanRecieve import CanRecieve
 bus = can.interface.Bus(channel= 'can0', bustype='socketcan_ctypes')  #///////////////
 
 # The style of graph matplotlib will be using
-style.use('dark_background')
+#style.use('dark_background')
 
 # PGSEbuttonOFF = Image.open("GUI Images/SV circle symbol red png.png")
 # PGSEbuttonON = Image.open("GUI Images/SV circle symbol green png.png")
@@ -105,9 +105,9 @@ class Main:
 
         # Matplotlib Refresh Function call -----------------------------------------------------------------------
         # Calls the animation function and refreshes the matplotlib graphs every 1000 ms (1 second)
-        ani1 = animation.FuncAnimation(f1,animate, interval=1000)
-        ani2 = animation.FuncAnimation(f2,animate, interval=1000)
-        ani3 = animation.FuncAnimation(f3,animate, interval=1000)
+#         ani1 = animation.FuncAnimation(f1,animate, interval=1000)
+#         ani2 = animation.FuncAnimation(f2,animate, interval=1000)
+#         ani3 = animation.FuncAnimation(f3,animate, interval=1000)
         
         # Start window--------------------------------------------------------------------------------------------
         root.attributes("-zoomed", True) #"zoomed" is fullscreen except taskbars on startup, "fullscreen" is no taskbars true fullscreen
@@ -552,29 +552,29 @@ class CenterFrame:
             self.valvelist.append(self.Valve(parent, valve))
 
         Sensors = [
-            ["COPV 1", 0.06, 0.0125, 0.075,0.00],
-            ["COPV 2", 0.06, 0.055, 0.075,0.00],
-            ["Fuel Tank", 0.505, 0.575, 0.06,0.04],
-            ["Lox Tank", 0.505, 0.125, 0.06,0.04],
-            ["Lox\n Dome", 0.305, 0.05, 0.02,0.08],
-            ["Fuel\n Dome", 0.305, 0.7, 0.02,0.08],
-            ["MV\n Pneumatic", 0.875, 0.005, 0.05,0.08],
-            ["Fuel\n Prop Inlet", .65, 0.25, 0.025,0.08],
-            ["LOx\n Prop Inlet", .8125, 0.25, 0.025,0.08],
-            ["---: ", .55, 0.225, 0.03, 0.00],
-            ["---: ", .55, 0.34, 0.03, 0.00],
-            ["---: ", .55, 0.455, 0.03, 0.00],
+            ["COPV LOx", 0.06, 0.0125, 0.075,0.00,84],
+            ["COPV Fuel", 0.06, 0.055, 0.075,0.00,83],
+            ["Fuel Tank", 0.505, 0.575, 0.06,0.04,81],
+            ["Lox Tank", 0.505, 0.125, 0.06,0.04,82],
+            ["Lox\n Dome", 0.305, 0.05, 0.02,0.08,80],
+            ["Fuel\n Dome", 0.305, 0.7, 0.02,0.08,79],
+            ["MV\n Pneumatic", 0.875, 0.005, 0.05,0.08,78],
+            ["Fuel\n Prop Inlet", .65, 0.25, 0.025,0.08,57],
+            ["LOx\n Prop Inlet", .8125, 0.25, 0.025,0.08,59],
+            ["---: ", .55, 0.225, 0.03, 0.00,0],
+            ["---: ", .55, 0.34, 0.03, 0.00,0],
+            ["---: ", .55, 0.455, 0.03, 0.00,0],
             # Engine Sensors
-            ["Fuel Inlet", .86, .38, 0.05,0.04],
-            ["Fuel Injector", .86, .46, 0.05,0.04],
-            ["LOX Injector", .86, .54, 0.05,0.04],
-            ["Pc Chamber 1", .86, .62, 0.05,0.04],
-            ["Pc Chamber 2", .86, .70, 0.05,0.04],
-            ["Pc Chamber 3", .86, .78, 0.05,0.04],
-            ["Temp\n ChamberExt", .86, .86, 0.05,0.08],
-            ["LC1: ", .725, .86, 0.065,0],
-            ["LC2: ", .725, .90, 0.065,0],
-            ["LC3: ", .725, .94, 0.065,0]
+            ["Fuel Inlet", .86, .38, 0.05,0.04,10],
+            ["Fuel Injector", .86, .46, 0.05,0.04,58],
+            ["LOX Injector", .86, .54, 0.05,0.04,12],
+            ["Pc Chamber 1", .86, .62, 0.05,0.04,56],
+            ["Pc Chamber 2", .86, .70, 0.05,0.04,55],
+            ["Pc Chamber 3", .86, .78, 0.05,0.04,15],
+            ["Temp\n ChamberExt", .86, .86, 0.05,0.08,16],
+            ["LC1: ", .725, .86, 0.065,0,17],
+            ["LC2: ", .725, .90, 0.065,0,18],
+            ["LC3: ", .725, .94, 0.065,0,19]
         ]
 
         # stores each sensor in the list
@@ -611,11 +611,16 @@ class CenterFrame:
             self.ReadingLabel = tk.Label(parent, text="N/A", font=("Verdana", 10), fg='orange', bg='black')
             self.ReadingLabel.place(relx=args[1] + args[3], rely=args[2] + args[4], anchor="nw")
             # self.SensorID = args[3]
+            self.stateID = args[5]
 
         # Updates the reading
         # Gets called by the Center Frame class
         def RefreshLabel(self):
-            value = random.randint(1, 100)  # CanRecieve.getVar(self.SensorID)
+            #value = random.randint(1, 100)  # CanRecieve.getVar(self.SensorID)
+            if self.stateID == 0:
+                value = 0
+            else:
+                value = CanRecieve.Sensors[self.stateID]
             self.ReadingLabel.config(text=value)  # Updates the label with the updated value
 
     # Instantiates the valves
@@ -710,48 +715,48 @@ class RightFrame:
             graphframe = tk.Frame(parent, bg="grey", bd=5)
             graphframe.place(relx= '-0.025', rely=0, relwidth=1.06, relheight=(1 / 3.1))
 
-            canvas = FigureCanvasTkAgg(f1, graphframe)
-            canvas.draw()
-            canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
-
-            toolbar = NavigationToolbar2Tk(canvas, graphframe)
-            toolbar.update()
-            canvas._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+#             canvas = FigureCanvasTkAgg(f1, graphframe)
+#             canvas.draw()
+#             canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+# 
+#             toolbar = NavigationToolbar2Tk(canvas, graphframe)
+#             toolbar.update()
+#             canvas._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
     class Graph2:
         def __init__(self, parent):
             graphframe = tk.Frame(parent, bg="grey", bd=5)
             graphframe.place(relx= '-0.025', rely=(1 / 3 + 0.0015) * 1, relwidth=1.06, relheight=(1 / 3.1))
 
-            canvas = FigureCanvasTkAgg(f2, graphframe)
-            canvas.draw()
-            canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
-
-            toolbar = NavigationToolbar2Tk(canvas, graphframe)
-            toolbar.update()
-            canvas._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+#             canvas = FigureCanvasTkAgg(f2, graphframe)
+#             canvas.draw()
+#             canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+# 
+#             toolbar = NavigationToolbar2Tk(canvas, graphframe)
+#             toolbar.update()
+#             canvas._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
     class Graph3:
         def __init__(self, parent):
             graphframe = tk.Frame(parent, bg="grey", bd=5)
             graphframe.place(relx= '-0.025', rely=(1 / 3 + 0.0015) * 2, relwidth=1.06, relheight=(1 / 3.1))
 
-            canvas = FigureCanvasTkAgg(f3, graphframe)
-            canvas.draw()
-            canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+#             canvas = FigureCanvasTkAgg(f3, graphframe)
+#             canvas.draw()
+#             canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+# 
+#             toolbar = NavigationToolbar2Tk(canvas, graphframe)
+#             toolbar.update()
+#             canvas._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
-            toolbar = NavigationToolbar2Tk(canvas, graphframe)
-            toolbar.update()
-            canvas._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
-
-f1 = Figure(figsize = (5,5), dpi = 55)
-f2 = Figure(figsize = (5,5), dpi = 55)
-f3 = Figure(figsize = (5,5), dpi = 55)
-
-a1 = f1.add_subplot(111)
-a2 = f2.add_subplot(111)
-a3 = f3.add_subplot(111)
+# f1 = Figure(figsize = (5,5), dpi = 55)
+# f2 = Figure(figsize = (5,5), dpi = 55)
+# f3 = Figure(figsize = (5,5), dpi = 55)
+# 
+# a1 = f1.add_subplot(111)
+# a2 = f2.add_subplot(111)
+# a3 = f3.add_subplot(111)
 
 def Reset():
     print("Reset")
