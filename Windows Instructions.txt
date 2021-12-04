@@ -1,0 +1,38 @@
+I have the codes and GUI to work on Windows and still working to get it working on Raspberry Pi (Debian Linux Based OS)
+
+You will need to install Python to be able to run Tkinter GUI Library in the Python environment
+Link: https://www.python.org/downloads/
+
+You will also need to have VS Code (or any IDE that is able to run Python and has a terminal)
+Link: https://code.visualstudio.com
+	- Need to install the Python extension in VS Code
+
+You will also need the MySQL server downloaded and have the database be on (make sure you do localhost)
+https://dev.mysql.com/downloads/installer/
+
+Open folder Pi-GUI-main in VS Code
+
+Ctrl+Shift+P to open the prompt search
+
+Type in Python: Select Interpreter
+
+On the pop-up, select the recommended (or something that says AvionicsGUI_env)
+
+What you have selected is a virtual environment that has all the libraries already pre-installed for the GUI, saves all the hassle
+for you to download different libraries on the command line or VS Code terminal
+
+Assuming that everything is set up, which includes having the code running in the virtual environment and the database running,
+here is what you need to check:
+	- On RenegadeGUI.py lines 21 - 26 are the MySQL connector, this allows you to be able to connect to the database on the localhost (your computer)
+	  Change the username and password according to how you installed you MySQL server
+	- On RenegadeGUI.py lines 32 - 34 are the SQL commands, if this is your first time running the code, uncomment lines 32 and 33
+	  Any subsequent runs will require you to comment them off
+
+Run the code and the GUI will pop up, if it's not in full windows screen, expand the screen
+
+On the Code VS terminal, you should see that the random data is being recorded, when you exit the GUI, the recorded data will then be saved,
+show have much data has been recorded during the run, all the data being shown in the database, and how rows from the table in the database
+
+
+
+
