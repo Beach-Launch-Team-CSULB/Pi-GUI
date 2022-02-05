@@ -139,12 +139,12 @@ class CanRecieve:
             if ID == 2:  # Prop Node state report logic
                 print("Prop Node")
                 node_data = ValveNodeState(ID, actualData)
-                self.prop_node_dict["id"] = node_data.id
+                self.prop_node_dict["id"] = str(node_data.id)
                 self.prop_node_dict["state"] = node_data.state
             if ID == 3:  # Upper Prop state report logic
                 print("Upper Prop Node")
                 node_data = ValveNodeState(ID, actualData)
-                self.upper_prop_node_dict["id"] = node_data.id
+                self.upper_prop_node_dict["id"] = str(node_data.id)
                 self.upper_prop_node_dict["state"] = node_data.state
 #             if datalist:
 #                 print(data)

@@ -53,7 +53,7 @@ class Main:
         # Displays the Propulsion Feed System
         # Displays the actuation state of individual valves and sensor readings
         # Allows for access to actuate individual valves when system is in Test mode
-        # Getting the png to show wasnt working when inside the class, so i brought it out to main class
+        # Getting the png to show wasn't working when inside the class, so I brought it out to main class
         # to then give the Center Class the frame with the PNG already on it
         centerFrame = tk.Frame(mainFrame, bg="Black")
         centerFrame.place(relx=0.11, rely=0.2, relwidth=0.7, relheight=0.65)
@@ -63,7 +63,7 @@ class Main:
         # schematicLabel.place(relx=0, rely=0, relwidth=1, relheight=1)
         CenterFrame(centerFrame)
         # Bottom Frame --------------------------------------------------------------------------------------------
-        # Bottom Frame Getting the png to show wasnt working when inside the class, so i brought it out to main class
+        # Bottom Frame Getting the png to show wasn't working when inside the class, so I brought it out to main class
         # to then give the Bottom Class the frame with the PNG already on it
         # Bottom Frame takes in the left frame to allow for the Vent and Abort functions to modify the states in the
         # left frame
@@ -145,7 +145,7 @@ class TopFrame:
         self.engine_node.refreshLabel()
         self.top_frame.after(100, self.refreshLabel)
 
-    # Currently all Nodes follow the same code structure
+    # Currently, all Nodes follow the same code structure
     class TelemetryNode:
         GUI_objects = {}
 
@@ -265,14 +265,15 @@ class TopFrame:
 # Left Frame --------------------------------------------------------------------------------------------
 class LeftFrame:
     # Keeps track of the operational state the system is in  ----------------------------------------------------
-    # Standby: System will not actuate any valves "Passive" or "Active" will be shown to display wether or not this
-    # mode is active Testing: Gives access to user to actuate individual valves Purge: Dont really know High Press
+    # Standby: System will not actuate any valves "Passive" or "Active" will be shown to display whether this
+    # mode is active Testing: Gives access to user to actuate individual valves Purge: Don't really know High Press
     # Press Arm: something about an arms, I thought Dan was into feet tbh High Press Pressurize: Allows pressure to
     # go into the COPV Tank Press Arm: I wonder if I can beat Dan in an Arm wrestle??? Right now yes I am soft and
-    # weak -Dan When and where? - Pizza Tank Pressurize: Pressurizes the Tanks and allows the COPV to still recieve
-    # pressure to get back filled Fire Arm: My arms are starting to get tired or writing comments Fire: Boom Boom
+    # weak -Dan When and where? - Pizza Tank Pressurize: Pressurizes the Tanks and allows the COPV to still receive
+    # pressure to get backfilled Fire Arm: My arms are starting to get tired or writing comments Fire: Boom Boom
     # Time From Purge to Fire state you cannot actuate any valves unless you override the system by enabling testing
-    # mode Testing mode will have to be disabled to continue with the operational States Once in Purge you have
+    # mode
+    # Testing mode will have to be disabled to continue with the operational States Once in Purge you have
     # entered Terminal countdown and can only go down the list of states. Only way out is through venting or aborting
     # State can be UnArmed by reclicking the Arm button and return to the state before it
 
@@ -280,11 +281,11 @@ class LeftFrame:
     # It takes in a list of data from the left buttons list corresponding to the state it is in
     # System Boots up in Standby/ Passive, both mean the same thing
     CurrState = ["Standby"]
-    # Keeps track of whether or not the Test State is active
+    # Keeps track of whether the Test State is active
     # When Test State is True, User can actuate Individual Valves
     TestState = False
 
-    # Data needed to setup the button for each State
+    # Data needed to set up the button for each State
     # [ State Name, State ID , commandID, commandOFF , commandON, IfItsAnArmState]
     States = [
         ["Test", 2, 1, 4, 5, False],
@@ -304,7 +305,7 @@ class LeftFrame:
         self.leftFrame = tk.Frame(parent, bg="grey", bd=5)
         self.leftFrame.place(relx=0.0001, rely=1 / 5, relwidth=.1, relheight=0.8)
 
-        # Font Size used for some of the labels
+        # Font Size used for some labels
         self.fontSize1 = tkFont.Font(size=17)
 
         # Creates label for Passive/Standby State
@@ -321,7 +322,7 @@ class LeftFrame:
 
     # Function is called by the Vent or Abort Buttons
     def VentorAbort(self):
-        # Resets every state in in the state list
+        # Resets every state in the state list
         prev = None
         for button in LeftFrame.States:
             curr = self.State(self.leftFrame, button, prev)
@@ -340,7 +341,7 @@ class LeftFrame:
             self.args = args
             # Creates Button for that State
             # Coordinates Relative to Left Frame
-            self.Button = tk.Button(parent, text=self.args[0], command=lambda: self.StateActuaction(),
+            self.Button = tk.Button(parent, text=self.args[0], command=lambda: self.StateActuation(),
                                     font=("Verdana", 10), fg='red', bg='black')
             self.Button.place(relx=0, rely=((1 / 9) * (self.args[1] - 1)) - 1 / 18, relwidth=1, relheight=1 / 9)
 
@@ -354,14 +355,14 @@ class LeftFrame:
             self.stateName = args[0]  # Stores the Name of the state
             self.isAnArmState = args[4]  # True is the State is an Arm State
 
-            # Font Size used for some of the labels
+            # Font Size used for some labels
             self.fontSize1 = tkFont.Font(size=20)
 
         # Stores the logic for the transition between States ----------------------------------------------------------
-        def StateActuaction(self):
+        def StateActuation(self):
             # If the Current state is not in Test Mode
             # If the Test Mode is not enabled
-            #   These may sound redundant but you can be in another state and test mode be enabled for overrides
+            #   These may sound redundant, but you can be in another state and test mode be enabled for overrides
             #   If Terminal Count has Started (State Purge through Fire), Test mode can be enabled to override the
             #       state conditions if needed
             # If the button pressed is not the Test Button, Test has different logic
@@ -369,7 +370,7 @@ class LeftFrame:
                 # If the button pressed is the Purge button
                 if self.stateName == "Purge":
                     # Shows the Purge State as Enabled/ Green
-                    self.Button = tk.Button(self.parent, text=self.args[0], command=lambda: self.StateActuaction(),
+                    self.Button = tk.Button(self.parent, text=self.args[0], command=lambda: self.StateActuation(),
                                             font=("Verdana", 10), fg='green', bg='black')
                     self.Button.place(relx=0, rely=((1 / 9) * (self.args[1] - 1)) - 1 / 18, relwidth=1, relheight=1 / 9)
 
@@ -392,11 +393,11 @@ class LeftFrame:
                     # Updates the Buttons to show the updated states
                     # Current state gets de-enabled/red
                     # Previous state gets enabled/green
-                    self.Button = tk.Button(self.parent, text=self.args[0], command=lambda: self.StateActuaction(),
+                    self.Button = tk.Button(self.parent, text=self.args[0], command=lambda: self.StateActuation(),
                                             font=("Verdana", 10), fg='red', bg='black')
                     self.Button.place(relx=0, rely=((1 / 9) * (self.args[1] - 1)) - 1 / 18, relwidth=1, relheight=1 / 9)
                     self.prevState.Button = tk.Button(self.parent, text=self.prevState.args[0],
-                                                      command=lambda: self.prevState.StateActuaction(),
+                                                      command=lambda: self.prevState.StateActuation(),
                                                       font=("Verdana", 10), fg='green', bg='black')
                     self.prevState.Button.place(relx=0, rely=((1 / 9) * (self.prevState.args[1] - 1)) - 1 / 18,
                                                 relwidth=1, relheight=1 / 9)
@@ -413,12 +414,12 @@ class LeftFrame:
                 # This is the main form of state transition
                 if LeftFrame.CurrState[0] == self.prevState.stateName:
                     # State pressed gets enabled/green and previous state gets de-enabled/red
-                    self.Button = tk.Button(self.parent, text=self.args[0], command=lambda: self.StateActuaction(),
+                    self.Button = tk.Button(self.parent, text=self.args[0], command=lambda: self.StateActuation(),
                                             font=("Verdana", 10), fg='green', bg='black')
                     self.Button.place(relx=0, rely=((1 / 9) * (self.args[1] - 1)) - 1 / 18, relwidth=1,
                                       relheight=1 / 9)
                     self.prevState.Button = tk.Button(self.parent, text=self.prevState.args[0],
-                                                      command=lambda: self.prevState.StateActuaction(),
+                                                      command=lambda: self.prevState.StateActuation(),
                                                       font=("Verdana", 10), fg='red', bg='black')
                     self.prevState.Button.place(relx=0, rely=((1 / 9) * (self.prevState.args[1] - 1)) - 1 / 18,
                                                 relwidth=1, relheight=1 / 9)
@@ -441,7 +442,7 @@ class LeftFrame:
                 if not LeftFrame.TestState:
                     # Enable test mode and update the state displays
                     LeftFrame.TestState = True
-                    self.Button = tk.Button(self.parent, text=self.args[0], command=lambda: self.StateActuaction(),
+                    self.Button = tk.Button(self.parent, text=self.args[0], command=lambda: self.StateActuation(),
                                             font=("Verdana", 10), fg='green', bg='black')
                     self.Button.place(relx=0, rely=((1 / 9) * (self.args[1] - 1)) - 1 / 18, relwidth=1, relheight=1 / 9)
                     msg = can.Message(arbitration_id=self.commandID, data=[self.commandON],
@@ -452,7 +453,7 @@ class LeftFrame:
                 else:
                     # Disable Test mode
                     LeftFrame.TestState = False
-                    self.Button = tk.Button(self.parent, text=self.args[0], command=lambda: self.StateActuaction(),
+                    self.Button = tk.Button(self.parent, text=self.args[0], command=lambda: self.StateActuation(),
                                             font=("Verdana", 10), fg='red', bg='black')
                     self.Button.place(relx=0, rely=((1 / 9) * (self.args[1] - 1)) - 1 / 18, relwidth=1, relheight=1 / 9)
                     msg = can.Message(arbitration_id=self.commandID, data=[self.commandOFF],
@@ -469,30 +470,30 @@ class BottomFrame:
     # Takes in as arguments the Main Frame and the Left Frame
     # The Left Frame is needed because the Vent and Abort states will need to de-enable the other states
 
-    # Data needed to setup the button for each State
+    # Data needed to set up the button for each State
     # [ State Name, X coordinate]
     bottomButtons = [
         ["Vent", 0, 1, 20, 21],
         ["Abort", 3 / 4, 1, 22, 23]
     ]
 
-    def __init__(self, parent, leftFrame):
+    def __init__(self, parent, left_frame):
         # Makes the Vent and Abort Buttons
         # They both have access to each other in case one needs to be enabled right after the other
-        vent = self.Button(parent, BottomFrame.bottomButtons[0], leftFrame)
-        abort = self.Button(parent, BottomFrame.bottomButtons[1], leftFrame, vent)
+        vent = self.Button(parent, BottomFrame.bottomButtons[0], left_frame)
+        abort = self.Button(parent, BottomFrame.bottomButtons[1], left_frame, vent)
         # other is just were the other state (either vent or abort) will be stored
         # got lazy with naming
         vent.other = abort
 
     # Makes and manages the buttons and state logic for the vent and abort
     class Button:
-        def __init__(self, parent, args, leftFrame, other=None):
+        def __init__(self, parent, args, left_frame, other=None):
             # Font size for the buttons
             self.fontSize = tkFont.Font(size=26)
 
-            # Instantiates buttons
-            self.Button = tk.Button(parent, text=args[0], font=self.fontSize, command=lambda: self.ValveActuaction(),
+            # Instantiate buttons
+            self.Button = tk.Button(parent, text=args[0], font=self.fontSize, command=lambda: self.ValveActuation(),
                                     fg='red', bg='grey')
             self.Button.place(relx=args[1], rely=0, relheight=1, relwidth=1 / 4)
             self.status = False
@@ -504,21 +505,21 @@ class BottomFrame:
 
             self.args = args
             self.parent = parent
-            self.leftFrame = leftFrame
+            self.leftFrame = left_frame
 
             # other is just were the other state (either vent or abort) will be stored
             # got lazy with naming
             self.other = other
 
         # Logic for the vent and abort
-        def ValveActuaction(self):
+        def ValveActuation(self):
             # Calls function from LeftFrame to reset all the state labels
             LeftFrame.VentorAbort(self.leftFrame)
             # If the state is currently off, turn it on
             if not self.status:
                 # Updates the display
                 self.Button = tk.Button(self.parent, text=self.args[0], font=self.fontSize,
-                                        command=lambda: self.ValveActuaction(),
+                                        command=lambda: self.ValveActuation(),
                                         fg='green', bg='grey')
                 self.Button.place(relx=self.args[1], rely=0, relheight=1, relwidth=1 / 4)
                 # Sets the state to true
@@ -527,7 +528,7 @@ class BottomFrame:
                 # if the other state (Vent or abort) is currently on, turn it off
                 if self.other.status:
                     self.other.Button = tk.Button(self.parent, text=self.other.args[0], font=self.fontSize,
-                                                  command=lambda: self.other.ValveActuaction(),
+                                                  command=lambda: self.other.ValveActuation(),
                                                   fg='red', bg='grey')
                     self.other.Button.place(relx=self.other.args[1], rely=0, relheight=1, relwidth=1 / 4)
                     self.other.status = False
@@ -538,7 +539,7 @@ class BottomFrame:
             else:  # Turns off the state pressed
                 self.status = False
                 self.Button = tk.Button(self.parent, text=self.args[0], font=self.fontSize,
-                                        command=lambda: self.ValveActuaction(),
+                                        command=lambda: self.ValveActuation(),
                                         fg='red', bg='grey')
                 self.Button.place(relx=self.args[1], rely=0, relheight=1, relwidth=1 / 4)
                 msg = can.Message(arbitration_id=self.commandID, data=[self.commandOFF], is_extended_id=False)  # ////
@@ -551,13 +552,6 @@ class BottomFrame:
             return 0
 
 
-class Canstuff:
-    @staticmethod
-    def run():
-        while True:
-            print("Brandon is superior than Dan")
-
-
 # Center Frame ------------------------------------------------------------------------------------------------------
 class CenterFrame:
     currValveState = "0000000000"
@@ -566,7 +560,7 @@ class CenterFrame:
         # Displays all the sensor readings and what the current valve actuation state is
         # Also allows user to actuate valves individually if test mode is enabled
 
-        # Data needed to setup the button
+        # Data needed to set up the button
         # [ Valve Name, relx ,rely , State ID , commandID, commandOFF , commandON]
         Valves = [
             ['HP', 0, .65, 16, 2, 32, 33],
@@ -624,15 +618,15 @@ class CenterFrame:
 
     # Readings Refresher, Recursive Function
     def RefreshLabel(self):
-        # print(CanRecieve.ValveState)
+        # print(CanReceive.ValveState)
         # for each sensor in the sensor list. refresh the label
         for sensor in self.sensorList:
             # calls the sensors label refresh function
             sensor.RefreshLabel()
-        #         # recalls this functino after 500 ms
-        #         if CanRecieve.ValveState != LeftFrame.currValveState:
-        #             for i in CanRecieve.ValveState:
-        #                 if CanRecieve.ValveState[i] != LeftFrame.currValveState[i]:
+        #         # recalls this function after 500 ms
+        #         if CanReceive.ValveState != LeftFrame.currValveState:
+        #             for i in CanReceive.ValveState:
+        #                 if CanReceive.ValveState[i] != LeftFrame.currValveState[i]:
         # for valve in self.valvelist:
 
         self.sensorList[1].ReadingLabel.after(250, self.RefreshLabel)
@@ -676,15 +670,15 @@ class CenterFrame:
             self.args = args
             self.parent = parent
 
-            # Used for Two Factor Authentication
+            # Used for Two-Factor Authentication
             self.time1 = time.time()
             self.time2 = 0
 
-        # Two Factor Authentication
+        # Two-Factor Authentication
         # Valve has to be pressed twice in the span of 1 second
         # In case someone spams the button press
         # At least half second needs to have passed from last valve actuation to be actuated again
-        # Calls ValveActucation() if TFA passed
+        # Calls ValveActuation() if TFA passed
         def TwoFactorAuthentication(self):
             if abs(self.time2 - self.time1) < 1:
                 self.time1 = time.time()
@@ -692,14 +686,14 @@ class CenterFrame:
             if time.time() - self.time1 > 0.5:
                 self.time1 = time.time()
             else:
-                self.ValveActuaction()
+                self.ValveActuation()
                 self.time1 = time.time()
             return 0
 
         # Sends out Can bus command for valve actuation
         # Can only be done if Test Mode is enabled
-        # Updates UI to show Valve actuaction state
-        def ValveActuaction(self):
+        # Updates UI to show Valve actuation state
+        def ValveActuation(self):
             if not LeftFrame.TestState:
                 return 0
             self.time2 = time.time()  # stores the time at which the valve was actuated
