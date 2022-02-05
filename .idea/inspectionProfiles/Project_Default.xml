@@ -1,0 +1,49 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="DuplicatedCode" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <Languages>
+        <language minSize="319" name="Python" />
+      </Languages>
+    </inspection_tool>
+    <inspection_tool class="Eslint" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <value>
+          <list size="3">
+            <item index="0" class="java.lang.String" itemvalue="greenlet" />
+            <item index="1" class="java.lang.String" itemvalue="cffi" />
+            <item index="2" class="java.lang.String" itemvalue="readline" />
+          </list>
+        </value>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyPep8NamingInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoredErrors">
+        <list>
+          <option value="N802" />
+          <option value="N801" />
+          <option value="N806" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredIdentifiers">
+        <list>
+          <option value="dict.append" />
+          <option value="dict.add" />
+          <option value="adafruit_bno08x" />
+          <option value="adafruit_icm20x" />
+          <option value="adafruit_bno08x.BNO08X_I2C" />
+          <option value="adafruit_icm20x.AccelRange.RANGE_30G" />
+          <option value="adafruit_icm20x.AccelDLPFFreq.*" />
+          <option value="adafruit_icm20x.GyroRange.RANGE_4000_DPS" />
+          <option value="adafruit_icm20x.GyroDLPFFreq.*" />
+          <option value="adafruit_icm20x.GyroRange.*" />
+          <option value="adafruit_bmp280" />
+          <option value="list.replace" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>
