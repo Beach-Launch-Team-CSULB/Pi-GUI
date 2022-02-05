@@ -17,6 +17,7 @@ from CanRecieve import CanRecieve
 
 bus = can.interface.Bus(channel='can0', bustype='socketcan')  # ///////////////
 
+
 # The style of graph matplotlib will be using
 # style.use('dark_background')
 
@@ -24,8 +25,6 @@ bus = can.interface.Bus(channel='can0', bustype='socketcan')  # ///////////////
 # PGSEbuttonON = Image.open("GUI Images/SV circle symbol green png.png")
 
 # Main Class, Everything is controlled from here
-update_strings = {}
-
 
 class Main:
     @staticmethod
@@ -170,7 +169,6 @@ class TopFrame:
             telemetryLabels[3]["text"] = "Bus Info"
 
             # Shows the current state of the node
-            update_strings["TelemetryState"] = tk.StringVar()
             nodeState = tk.Label(telemetryframe, text="Default State", bg="black", fg="white")
             nodeState.place(relx=2 / 3, rely=2 / 3, relwidth=(1 / 3), relheight=1 / 3)
             # Reset button
@@ -191,7 +189,6 @@ class TopFrame:
             upperPropSystemframe.place(relx=(1 / 4 + 0.0015), rely=0, relwidth=(1 / 4.1), relheight=1)
 
             upperPropSystemLabels = []
-            update_strings["UpperPropState"] = tk.StringVar()
             for i in range(4):
                 label = tk.Label(upperPropSystemframe, text="", bg="grey", anchor="w")
                 upperPropSystemLabels.append(label)
@@ -227,7 +224,6 @@ class TopFrame:
                 label = tk.Label(engineframe, text="NA", bg="grey", anchor="w")
                 engineLabels.append(label)
                 label.place(relx=0, rely=(1 / 4) * i, relwidth=2 / 3, relheight=1 / 4)
-            update_strings["EngineState"] = tk.StringVar()
             engineLabels[0]["text"] = "Engine Node"
             engineLabels[1]["text"] = "Activity: "
             engineLabels[2]["text"] = "MCU Temp: "
@@ -247,7 +243,6 @@ class TopFrame:
         def __init__(self, parent):
             padGroundframe = tk.Frame(parent, bg="grey", bd=5)
             padGroundframe.place(relx=(1 / 4 + 0.0015) * 3, rely=0, relwidth=(1 / 4.1), relheight=1)
-            update_strings["PadGroundState"] = tk.StringVar()
             padGroundLabels = []
             for i in range(4):
                 label = tk.Label(padGroundframe, text="", bg="grey", anchor="w")
