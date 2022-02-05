@@ -1,12 +1,6 @@
 import can
 
 
-# Function to convert Decimal number
-# to Binary number
-def decimalToBinary(n):
-    return "{0:b}".format(int(n))
-
-
 class ValveDevice:
     valve_id: int = 0
     valve_state: int = 0
@@ -49,6 +43,8 @@ class ValveNodeState:
 
 
 def CanMessageToBitArray(can_msg):
+    # Quick and dirty binary translator since I couldn't find a python implementation I liked
+    # This array holds values between 0-15 as array indexes
     bin_translator = [
         [0, 0, 0, 0],
         [0, 0, 0, 1],
@@ -87,7 +83,6 @@ def BitArrayToDec(inp_array):
 
 
 class CanRecieve:
-    update_values = True
     Sensors = [0] * 2048
     #             ["COPV 1", 1, 0],
     #             ["COPV 2", 2, 0],
@@ -111,21 +106,15 @@ class CanRecieve:
     #             ["LC3: ", 19, 0]
     #
     # Binary String of bools that hold the current position of the valves
-    ValveState = ""
     prop_node_dict = {"id": "0", "state": "Default State"}
     upper_prop_node_dict = {"id": "0", "state": "Default State"}
 
     def __init__(self):
         self.loop = True
 
-    def update_value_false(self):
-        self.update_values = False
-
     def run(self):
-        self.update_values = True
         bustype = 'socketcan'
         channel0 = 'can0'
-        print("hi")
         busReceive = can.interface.Bus(channel=channel0, bustype=bustype)
         while self.loop:
             msgIn = busReceive.recv(timeout=None)
