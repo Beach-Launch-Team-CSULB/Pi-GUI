@@ -13,7 +13,7 @@ from tkinter import font as tkFont  # for font size
 # uncomment when on Pi or comment out when on a computer
 import can  # /////////////////////////////////////////////////////////////////////////
 # from CanSend import CanSend
-from CanRecieve import CanRecieve
+from CanReceive import CanReceive
 
 bus = can.interface.Bus(channel='can0', bustype='socketcan')  # ///////////////
 
@@ -79,26 +79,26 @@ class Main:
         logo1 = tk.Label(bottomFrame, image=RenegadeLOGO, bg="black")
         logo1.place(relx=.415, rely='-.1250')
 
-        engineart = tk.PhotoImage(file="GUI Images/Engine Clipart smol.png")
-        logo2 = tk.Label(centerFrame, image=engineart, bg="black")
+        engine_art = tk.PhotoImage(file="GUI Images/Engine Clipart smol.png")
+        logo2 = tk.Label(centerFrame, image=engine_art, bg="black")
         logo2.place(relx=.735, rely=.40)
 
-        LOXTankart = tk.PhotoImage(file="GUI Images/TankPlainClipart.png")
-        logo3 = tk.Label(centerFrame, image=LOXTankart, bg="black")
+        lox_tank_art = tk.PhotoImage(file="GUI Images/TankPlainClipart.png")
+        logo3 = tk.Label(centerFrame, image=lox_tank_art, bg="black")
         logo3.place(relx=.475, rely=.2)
 
-        FuelTankart = tk.PhotoImage(file="GUI Images/TankPlainClipart.png")
-        logo4 = tk.Label(centerFrame, image=FuelTankart, bg="black")
+        fuel_tank_art = tk.PhotoImage(file="GUI Images/TankPlainClipart.png")
+        logo4 = tk.Label(centerFrame, image=fuel_tank_art, bg="black")
         logo4.place(relx=.475, rely=.615)
 
-        COPVTankart = tk.PhotoImage(file="GUI Images/TankPlainClipartCOPV.png")
-        logo5 = tk.Label(centerFrame, image=COPVTankart, bg="black")
+        copv_tank_art = tk.PhotoImage(file="GUI Images/TankPlainClipartCOPV.png")
+        logo5 = tk.Label(centerFrame, image=copv_tank_art, bg="black")
         logo5.place(relx=.0, rely=.0)
 
-        DomeRegart = tk.PhotoImage(file="GUI Images/AquaDomeReg Clipart.png")
-        logo6 = tk.Label(centerFrame, image=DomeRegart, bg="black")
+        dome_reg_art = tk.PhotoImage(file="GUI Images/AquaDomeReg Clipart.png")
+        logo6 = tk.Label(centerFrame, image=dome_reg_art, bg="black")
         logo6.place(relx=.25, rely=.185)
-        logo7 = tk.Label(centerFrame, image=DomeRegart, bg="black")
+        logo7 = tk.Label(centerFrame, image=dome_reg_art, bg="black")
         logo7.place(relx=.25, rely=.5)
 
         BottomFrame(bottomFrame, leftFrame)
@@ -152,14 +152,14 @@ class TopFrame:
         def __init__(self, parent):
             # Makes Frame
             # Coordinates are relative to the Top Frame --------------------------------------------------------------
-            telemetryframe = tk.Frame(parent, bg="grey", bd=5)
-            telemetryframe.place(relx=0, rely=0, relwidth=(1 / 4.1), relheight=1)
+            telemetry_frame = tk.Frame(parent, bg="grey", bd=5)
+            telemetry_frame.place(relx=0, rely=0, relwidth=(1 / 4.1), relheight=1)
 
             # Coordinates are relative to the Top Frame --------------------------------------------------------------
             # Makes 4 labels and then stores them in a list
             telemetryLabels = []
             for i in range(4):
-                placed_label = tk.Label(telemetryframe, text="", bg="grey", anchor="w")
+                placed_label = tk.Label(telemetry_frame, text="", bg="grey", anchor="w")
                 placed_label.place(relx=0, rely=(1 / 4) * i, relwidth=2 / 3, relheight=1 / 4)
                 telemetryLabels.append(placed_label)
             # Gives each label a text
@@ -169,14 +169,14 @@ class TopFrame:
             telemetryLabels[3]["text"] = "Bus Info"
 
             # Shows the current state of the node
-            nodeState = tk.Label(telemetryframe, text="Default State", bg="black", fg="white")
+            nodeState = tk.Label(telemetry_frame, text="Default State", bg="black", fg="white")
             nodeState.place(relx=2 / 3, rely=2 / 3, relwidth=(1 / 3), relheight=1 / 3)
             # Reset button
-            resetButton = tk.Button(telemetryframe, text="Reset", command=lambda: Reset(),
+            resetButton = tk.Button(telemetry_frame, text="Reset", command=lambda: Reset(),
                                     font=("Verdana", 10),
                                     fg='black', bg='white')
             resetButton.place(relx=3 / 4, rely=0, relwidth=1 / 4, relheight=1 / 3)
-            self.GUI_objects['TelemetryFrame'] = telemetryframe
+            self.GUI_objects['TelemetryFrame'] = telemetry_frame
             self.GUI_objects['TelemetryLabels'] = telemetryLabels
             self.GUI_objects['NodeState'] = nodeState
             self.GUI_objects['resetButton'] = resetButton
@@ -185,12 +185,12 @@ class TopFrame:
         NodeStateContainer = []
 
         def __init__(self, parent):
-            upperPropSystemframe = tk.Frame(parent, bg="grey", bd=5)
-            upperPropSystemframe.place(relx=(1 / 4 + 0.0015), rely=0, relwidth=(1 / 4.1), relheight=1)
+            upperPropSystemFrame = tk.Frame(parent, bg="grey", bd=5)
+            upperPropSystemFrame.place(relx=(1 / 4 + 0.0015), rely=0, relwidth=(1 / 4.1), relheight=1)
 
             upperPropSystemLabels = []
             for i in range(4):
-                label = tk.Label(upperPropSystemframe, text="", bg="grey", anchor="w")
+                label = tk.Label(upperPropSystemFrame, text="", bg="grey", anchor="w")
                 upperPropSystemLabels.append(label)
                 label.place(relx=0, rely=(1 / 4) * i, relwidth=2 / 3, relheight=1 / 4)
 
@@ -199,53 +199,53 @@ class TopFrame:
             upperPropSystemLabels[2]["text"] = "MCU Temp: "
             upperPropSystemLabels[3]["text"] = "Bus Info"
 
-            nodeState = tk.Label(upperPropSystemframe, text="Hi", bg="black",
+            nodeState = tk.Label(upperPropSystemFrame, text="Hi", bg="black",
                                  fg="white")
             self.NodeStateContainer.append(nodeState)
             nodeState.place(relx=2 / 3, rely=2 / 3, relwidth=(1 / 3), relheight=1 / 3)
 
-            resetButton = tk.Button(upperPropSystemframe, text="Reset", command=lambda: Reset(), font=("Verdana", 10),
+            resetButton = tk.Button(upperPropSystemFrame, text="Reset", command=lambda: Reset(), font=("Verdana", 10),
                                     fg='black', bg='white')
             resetButton.place(relx=3 / 4, rely=0, relwidth=1 / 4, relheight=1 / 3)
             self.refreshLabel()
 
         def refreshLabel(self):
-            self.NodeStateContainer[0].config(text=str(canrecieve.upper_prop_node_dict["state"]))
+            self.NodeStateContainer[0].config(text=str(can_receive.upper_prop_node_dict["state"]))
 
     class EngineNode:
         NodeStateContainer = []
 
         def __init__(self, parent):
-            engineframe = tk.Frame(parent, bg="grey", bd=5)
-            engineframe.place(relx=(1 / 4 + 0.0015) * 2, rely=0, relwidth=(1 / 4.1), relheight=1)
+            engineFrame = tk.Frame(parent, bg="grey", bd=5)
+            engineFrame.place(relx=(1 / 4 + 0.0015) * 2, rely=0, relwidth=(1 / 4.1), relheight=1)
 
             engineLabels = []
             for i in range(4):
-                label = tk.Label(engineframe, text="NA", bg="grey", anchor="w")
+                label = tk.Label(engineFrame, text="NA", bg="grey", anchor="w")
                 engineLabels.append(label)
                 label.place(relx=0, rely=(1 / 4) * i, relwidth=2 / 3, relheight=1 / 4)
             engineLabels[0]["text"] = "Engine Node"
             engineLabels[1]["text"] = "Activity: "
             engineLabels[2]["text"] = "MCU Temp: "
             engineLabels[3]["text"] = "Bus Info"
-            nodeState = tk.Label(engineframe, text="Default State", bg="black", fg="white")
+            nodeState = tk.Label(engineFrame, text="Default State", bg="black", fg="white")
             nodeState.place(relx=2 / 3, rely=2 / 3, relwidth=(1 / 3), relheight=1 / 3)
             self.NodeStateContainer.append(nodeState)
-            resetButton = tk.Button(engineframe, text="Reset", command=lambda: Reset(), font=("Verdana", 10),
+            resetButton = tk.Button(engineFrame, text="Reset", command=lambda: Reset(), font=("Verdana", 10),
                                     fg='black', bg='white')
             resetButton.place(relx=3 / 4, rely=0, relwidth=1 / 4, relheight=1 / 3)
             self.refreshLabel()
 
         def refreshLabel(self):
-            self.NodeStateContainer[0].config(text=canrecieve.prop_node_dict["state"])
+            self.NodeStateContainer[0].config(text=can_receive.prop_node_dict["state"])
 
     class PadGroundNode:
         def __init__(self, parent):
-            padGroundframe = tk.Frame(parent, bg="grey", bd=5)
-            padGroundframe.place(relx=(1 / 4 + 0.0015) * 3, rely=0, relwidth=(1 / 4.1), relheight=1)
+            padGroundFrame = tk.Frame(parent, bg="grey", bd=5)
+            padGroundFrame.place(relx=(1 / 4 + 0.0015) * 3, rely=0, relwidth=(1 / 4.1), relheight=1)
             padGroundLabels = []
             for i in range(4):
-                label = tk.Label(padGroundframe, text="", bg="grey", anchor="w")
+                label = tk.Label(padGroundFrame, text="", bg="grey", anchor="w")
                 padGroundLabels.append(label)
                 label.place(relx=0, rely=(1 / 4) * i, relwidth=2 / 3, relheight=1 / 4)
 
@@ -254,10 +254,10 @@ class TopFrame:
             padGroundLabels[2]["text"] = "MCU Temp: "
             padGroundLabels[3]["text"] = "Bus Info"
 
-            nodeState = tk.Label(padGroundframe, text="Default State", bg="black", fg="white")
+            nodeState = tk.Label(padGroundFrame, text="Default State", bg="black", fg="white")
             nodeState.place(relx=2 / 3, rely=2 / 3, relwidth=(1 / 3), relheight=1 / 3)
 
-            resetButton = tk.Button(padGroundframe, text="Reset", command=lambda: Reset(), font=("Verdana", 10),
+            resetButton = tk.Button(padGroundFrame, text="Reset", command=lambda: Reset(), font=("Verdana", 10),
                                     fg='black', bg='white')
             resetButton.place(relx=3 / 4, rely=0, relwidth=1 / 4, relheight=1 / 3)
 
@@ -575,11 +575,11 @@ class CenterFrame:
             ['FMV', .665, .15, 25, 2, 50, 51],
         ]
 
-        self.valvelist = []
+        self.valve_list = []
 
         # Creates a button for each valve
         for valve in Valves:
-            self.valvelist.append(self.Valve(parent, valve))
+            self.valve_list.append(self.Valve(parent, valve))
 
         Sensors = [
             ["COPV LOx", 0.06, 0.0125, 0.075, 0.00, 84],
@@ -627,7 +627,7 @@ class CenterFrame:
         #         if CanReceive.ValveState != LeftFrame.currValveState:
         #             for i in CanReceive.ValveState:
         #                 if CanReceive.ValveState[i] != LeftFrame.currValveState[i]:
-        # for valve in self.valvelist:
+        # for valve in self.valve_list:
 
         self.sensorList[1].ReadingLabel.after(250, self.RefreshLabel)
 
@@ -646,11 +646,11 @@ class CenterFrame:
         # Updates the reading
         # Gets called by the Center Frame class
         def RefreshLabel(self):
-            # value = random.randint(1, 100)  # CanRecieve.getVar(self.SensorID)
+            # value = random.randint(1, 100)  # CanReceive.getVar(self.SensorID)
             if self.stateID == 0:
                 value = 0
             else:
-                value = CanRecieve.Sensors[self.stateID]
+                value = CanReceive.Sensors[self.stateID]
             self.ReadingLabel.config(text=value)  # Updates the label with the updated value
 
     # Instantiates the valves
@@ -743,8 +743,8 @@ class RightFrame:
 
     class Graph1:
         def __init__(self, parent):
-            graphframe = tk.Frame(parent, bg="grey", bd=5)
-            graphframe.place(relx='-0.025', rely=0, relwidth=1.06, relheight=(1 / 3.1))
+            graph_frame = tk.Frame(parent, bg="grey", bd=5)
+            graph_frame.place(relx='-0.025', rely=0, relwidth=1.06, relheight=(1 / 3.1))
 
     #             canvas = FigureCanvasTkAgg(f1, graphframe)
     #             canvas.draw()
@@ -756,8 +756,8 @@ class RightFrame:
 
     class Graph2:
         def __init__(self, parent):
-            graphframe = tk.Frame(parent, bg="grey", bd=5)
-            graphframe.place(relx='-0.025', rely=(1 / 3 + 0.0015) * 1, relwidth=1.06, relheight=(1 / 3.1))
+            graph_frame = tk.Frame(parent, bg="grey", bd=5)
+            graph_frame.place(relx='-0.025', rely=(1 / 3 + 0.0015) * 1, relwidth=1.06, relheight=(1 / 3.1))
 
     #             canvas = FigureCanvasTkAgg(f2, graphframe)
     #             canvas.draw()
@@ -769,8 +769,8 @@ class RightFrame:
 
     class Graph3:
         def __init__(self, parent):
-            graphframe = tk.Frame(parent, bg="grey", bd=5)
-            graphframe.place(relx='-0.025', rely=(1 / 3 + 0.0015) * 2, relwidth=1.06, relheight=(1 / 3.1))
+            graph_frame = tk.Frame(parent, bg="grey", bd=5)
+            graph_frame.place(relx='-0.025', rely=(1 / 3 + 0.0015) * 2, relwidth=1.06, relheight=(1 / 3.1))
 
 
 #             canvas = FigureCanvasTkAgg(f3, graphframe)
@@ -830,13 +830,13 @@ if __name__ == '__main__':
     #     cansend = CanSend()
     #     cansendThread = Thread(target=cansend.run)
     #     cansendThread.daemon = True
-    canrecieve = CanRecieve()
-    canrecieveThread = Thread(target=canrecieve.run)
-    canrecieveThread.daemon = True
+    can_receive = CanReceive()
+    can_receive_thread = Thread(target=can_receive.run)
+    can_receive_thread.daemon = True
 
     GUIThread.start()
     #     cansendThread.start()
-    canrecieveThread.start()
+    can_receive_thread.start()
     signal.pause()
 
 #     LCan2 = Canstuff()

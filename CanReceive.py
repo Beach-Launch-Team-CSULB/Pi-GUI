@@ -82,7 +82,7 @@ def BitArrayToDec(inp_array):
     return out_num
 
 
-class CanRecieve:
+class CanReceive:
     Sensors = [0] * 2048
     #             ["COPV 1", 1, 0],
     #             ["COPV 2", 2, 0],
@@ -113,9 +113,9 @@ class CanRecieve:
         self.loop = True
 
     def run(self):
-        bustype = 'socketcan'
+        bus_type = 'socketcan'
         channel0 = 'can0'
-        busReceive = can.interface.Bus(channel=channel0, bustype=bustype)
+        busReceive = can.interface.Bus(channel=channel0, bustype=bus_type)
         while self.loop:
             msgIn = busReceive.recv(timeout=None)
             data = str(msgIn)
@@ -124,7 +124,7 @@ class CanRecieve:
             ID = int(datalist[3], base=16)
             value = int(actualData[0] + actualData[1], base=16)
             print(value)
-            CanRecieve.Sensors[ID] = value
+            CanReceive.Sensors[ID] = value
             if ID == 2:  # Prop Node state report logic
                 print("Prop Node")
                 node_data = ValveNodeState(ID, actualData)
