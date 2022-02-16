@@ -136,13 +136,13 @@ class TopFrame:
         # they may all be operated differently in the future
         self.TelemetryNode(self.top_frame)
         self.upper_prop_system_node = self.UpperPropSystemNode(self.top_frame)
-        self.engine_node = self.EngineNode(self.top_frame)
+        # self.engine_node = self.EngineNode(self.top_frame)
         self.PadGroundNode(self.top_frame)
         self.refreshLabel()
 
     def refreshLabel(self):
         self.upper_prop_system_node.refreshLabel()
-        self.engine_node.refreshLabel()
+        # self.engine_node.refreshLabel()
         self.top_frame.after(100, self.refreshLabel)
 
     # Currently, all Nodes follow the same code structure
@@ -212,32 +212,32 @@ class TopFrame:
         def refreshLabel(self):
             self.NodeStateContainer[0].config(text=str(can_receive.upper_prop_node_dict["state"]))
 
-    class EngineNode:
-        NodeStateContainer = []
-
-        def __init__(self, parent):
-            engineFrame = tk.Frame(parent, bg="grey", bd=5)
-            engineFrame.place(relx=(1 / 4 + 0.0015) * 2, rely=0, relwidth=(1 / 4.1), relheight=1)
-
-            engineLabels = []
-            for i in range(4):
-                label = tk.Label(engineFrame, text="NA", bg="grey", anchor="w")
-                engineLabels.append(label)
-                label.place(relx=0, rely=(1 / 4) * i, relwidth=2 / 3, relheight=1 / 4)
-            engineLabels[0]["text"] = "Engine Node"
-            engineLabels[1]["text"] = "Activity: "
-            engineLabels[2]["text"] = "MCU Temp: "
-            engineLabels[3]["text"] = "Bus Info"
-            nodeState = tk.Label(engineFrame, text="Default State", bg="black", fg="white")
-            nodeState.place(relx=2 / 3, rely=2 / 3, relwidth=(1 / 3), relheight=1 / 3)
-            self.NodeStateContainer.append(nodeState)
-            resetButton = tk.Button(engineFrame, text="Reset", command=lambda: Reset(), font=("Verdana", 10),
-                                    fg='black', bg='white')
-            resetButton.place(relx=3 / 4, rely=0, relwidth=1 / 4, relheight=1 / 3)
-            self.refreshLabel()
-
-        def refreshLabel(self):
-            self.NodeStateContainer[0].config(text=can_receive.prop_node_dict["state"])
+    # class EngineNode:
+    #     NodeStateContainer = []
+    #
+    #     def __init__(self, parent):
+    #         engineFrame = tk.Frame(parent, bg="grey", bd=5)
+    #         engineFrame.place(relx=(1 / 4 + 0.0015) * 2, rely=0, relwidth=(1 / 4.1), relheight=1)
+    #
+    #         engineLabels = []
+    #         for i in range(4):
+    #             label = tk.Label(engineFrame, text="NA", bg="grey", anchor="w")
+    #             engineLabels.append(label)
+    #             label.place(relx=0, rely=(1 / 4) * i, relwidth=2 / 3, relheight=1 / 4)
+    #         engineLabels[0]["text"] = "Engine Node"
+    #         engineLabels[1]["text"] = "Activity: "
+    #         engineLabels[2]["text"] = "MCU Temp: "
+    #         engineLabels[3]["text"] = "Bus Info"
+    #         nodeState = tk.Label(engineFrame, text="Default State", bg="black", fg="white")
+    #         nodeState.place(relx=2 / 3, rely=2 / 3, relwidth=(1 / 3), relheight=1 / 3)
+    #         self.NodeStateContainer.append(nodeState)
+    #         resetButton = tk.Button(engineFrame, text="Reset", command=lambda: Reset(), font=("Verdana", 10),
+    #                                 fg='black', bg='white')
+    #         resetButton.place(relx=3 / 4, rely=0, relwidth=1 / 4, relheight=1 / 3)
+    #         self.refreshLabel()
+    #
+    #     def refreshLabel(self):
+    #         self.NodeStateContainer[0].config(text=can_receive.prop_node_dict["state"])
 
     class PadGroundNode:
         def __init__(self, parent):
@@ -289,13 +289,12 @@ class LeftFrame:
     # [ State Name, State ID , commandID, commandOFF , commandON, IfItsAnArmState]
     States = [
         ["Test", 2, 1, 4, 5, False],
-        ["Purge", 3, 1, 6, 7, False],
-        ["Hi-Press\nPress Arm", 4, 1, 8, 9, True],
-        ["Hi-Press\nPressurize", 5, 1, 10, 11, False],
-        ["Tank Press \nArm", 6, 1, 12, 13, True],
-        ["Tank \nPressurize", 7, 1, 14, 15, False],
-        ["Fire Arm", 8, 1, 16, 17, True],
-        ["FIRE", 9, 1, 18, 19, False]
+        ["Hi-Press\nPress Arm", 3, 1, 8, 9, True],
+        ["Hi-Press\nPressurize", 4, 1, 10, 11, False],
+        ["Tank Press \nArm", 5, 1, 12, 13, True],
+        ["Tank \nPressurize", 6, 1, 14, 15, False],
+        ["Fire Arm", 7, 1, 16, 17, True],
+        ["FIRE", 8, 1, 18, 19, False]
     ]
 
     # The class takes in the parent Frame (Main Frame) as an input
@@ -343,7 +342,7 @@ class LeftFrame:
             # Coordinates Relative to Left Frame
             self.Button = tk.Button(parent, text=self.args[0], command=lambda: self.StateActuation(),
                                     font=("Verdana", 10), fg='red', bg='black')
-            self.Button.place(relx=0, rely=((1 / 9) * (self.args[1] - 1)) - 1 / 18, relwidth=1, relheight=1 / 9)
+            self.Button.place(relx=0, rely=((1 / 7.5) * (self.args[1] - 1)) - 1 / 16, relwidth=1, relheight=1 / 7.5)
 
             # commandID, commandOFF, commandON are needed for the Can Commands
             self.commandID = self.args[2]
