@@ -136,13 +136,11 @@ class TopFrame:
         # they may all be operated differently in the future
         self.TelemetryNode(self.top_frame)
         self.upper_prop_system_node = self.UpperPropSystemNode(self.top_frame)
-        # self.engine_node = self.EngineNode(self.top_frame)
         self.PadGroundNode(self.top_frame)
         self.refreshLabel()
 
     def refreshLabel(self):
         self.upper_prop_system_node.refreshLabel()
-        # self.engine_node.refreshLabel()
         self.top_frame.after(100, self.refreshLabel)
 
     # Currently, all Nodes follow the same code structure
@@ -153,7 +151,7 @@ class TopFrame:
             # Makes Frame
             # Coordinates are relative to the Top Frame --------------------------------------------------------------
             telemetry_frame = tk.Frame(parent, bg="grey", bd=5)
-            telemetry_frame.place(relx=0, rely=0, relwidth=(1 / 4.1), relheight=1)
+            telemetry_frame.place(relx=0, rely=0, relwidth=(1 / 3.1), relheight=1)
 
             # Coordinates are relative to the Top Frame --------------------------------------------------------------
             # Makes 4 labels and then stores them in a list
@@ -186,7 +184,7 @@ class TopFrame:
 
         def __init__(self, parent):
             upperPropSystemFrame = tk.Frame(parent, bg="grey", bd=5)
-            upperPropSystemFrame.place(relx=(1 / 4 + 0.0015), rely=0, relwidth=(1 / 4.1), relheight=1)
+            upperPropSystemFrame.place(relx=(1 / 3 + 0.0015), rely=0, relwidth=(1 / 3.1), relheight=1)
 
             upperPropSystemLabels = []
             for i in range(4):
@@ -212,37 +210,10 @@ class TopFrame:
         def refreshLabel(self):
             self.NodeStateContainer[0].config(text=str(can_receive.upper_prop_node_dict["state"]))
 
-    # class EngineNode:
-    #     NodeStateContainer = []
-    #
-    #     def __init__(self, parent):
-    #         engineFrame = tk.Frame(parent, bg="grey", bd=5)
-    #         engineFrame.place(relx=(1 / 4 + 0.0015) * 2, rely=0, relwidth=(1 / 4.1), relheight=1)
-    #
-    #         engineLabels = []
-    #         for i in range(4):
-    #             label = tk.Label(engineFrame, text="NA", bg="grey", anchor="w")
-    #             engineLabels.append(label)
-    #             label.place(relx=0, rely=(1 / 4) * i, relwidth=2 / 3, relheight=1 / 4)
-    #         engineLabels[0]["text"] = "Engine Node"
-    #         engineLabels[1]["text"] = "Activity: "
-    #         engineLabels[2]["text"] = "MCU Temp: "
-    #         engineLabels[3]["text"] = "Bus Info"
-    #         nodeState = tk.Label(engineFrame, text="Default State", bg="black", fg="white")
-    #         nodeState.place(relx=2 / 3, rely=2 / 3, relwidth=(1 / 3), relheight=1 / 3)
-    #         self.NodeStateContainer.append(nodeState)
-    #         resetButton = tk.Button(engineFrame, text="Reset", command=lambda: Reset(), font=("Verdana", 10),
-    #                                 fg='black', bg='white')
-    #         resetButton.place(relx=3 / 4, rely=0, relwidth=1 / 4, relheight=1 / 3)
-    #         self.refreshLabel()
-    #
-    #     def refreshLabel(self):
-    #         self.NodeStateContainer[0].config(text=can_receive.prop_node_dict["state"])
-
     class PadGroundNode:
         def __init__(self, parent):
             padGroundFrame = tk.Frame(parent, bg="grey", bd=5)
-            padGroundFrame.place(relx=(1 / 4 + 0.0015) * 3, rely=0, relwidth=(1 / 4.1), relheight=1)
+            padGroundFrame.place(relx=(2 / 3 + 0.0015), rely=0, relwidth=(1 / 3.1), relheight=1)
             padGroundLabels = []
             for i in range(4):
                 label = tk.Label(padGroundFrame, text="", bg="grey", anchor="w")
@@ -726,7 +697,7 @@ class TimeFrame:
     # Displays the current time on the GUI, still needs work
     def __init__(self, parent):
         timeFrame = tk.Frame(parent, bg="black", bd=5)
-        timeFrame.place(relx=.825, rely=.035, relwidth=.175, relheight=0.05)
+        timeFrame.place(relx=.815, rely=.008, relwidth=.185, relheight=0.05)
 
         # clockFrame = self.TelemetryNode(timeFrame)
 
