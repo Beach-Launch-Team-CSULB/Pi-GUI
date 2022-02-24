@@ -697,8 +697,11 @@ class CenterFrame:
 class TimeFrame:
     # Displays the current time on the GUI, still needs work
     def __init__(self, parent):
-        timeFrame = tk.Frame(parent, bg="black", bd=5)
+        timeFrame = tk.Frame(parent, bg="red", bd=5)
         timeFrame.place(relx=.815, rely=.008, relwidth=.185, relheight=0.05)
+
+        timeLabel = tk.Label(timeFrame, text = "Hello")
+        timeLabel.place(relx=0.1, rely=0.1)
 
         # clockFrame = self.TelemetryNode(timeFrame)
 
