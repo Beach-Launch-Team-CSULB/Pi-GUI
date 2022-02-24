@@ -536,7 +536,7 @@ class CenterFrame:
             ['HP', 0, .65, 16, 2, 32, 33],
             ['HV', .075, .825, 17, 2, 34, 35],
             ['LV', .375, .025, 18, 3, 36, 37],
-            ['LDR', .15, .15, 19, 3, 38, 39],
+            ['LDR', .15, .15, 19, 3, 38, 39], # LDR
             ['LDV', .225, .025, 20, 3, 40, 41],
             ['FV', .375, .8, 21, 3, 42, 43],
             ['FDR', .15, .65, 22, 3, 44, 45],
@@ -627,7 +627,8 @@ class CenterFrame:
     class Valve:
         def __init__(self, parent, args):
             # Makes button that can be used by user to actuate valve
-            self.Button = tk.Button(parent, text=args[0], command=lambda: self.TwoFactorAuthentication(),
+            self.photo = tk.PhotoImage(file="GUI Images/" + args[0] + "Button.png").subsample(5)
+            self.Button = tk.Button(parent, image=self.photo, command=lambda: self.TwoFactorAuthentication(),
                                     font=("Verdana", 10), fg='red', bg='black')
             self.Button.place(relx=args[1], rely=args[2])
 
