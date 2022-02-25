@@ -1,3 +1,4 @@
+import datetime
 import signal
 import tkinter as tk
 from threading import Thread
@@ -536,7 +537,6 @@ class CenterFrame:
             ['HP', 0, .65, 16, 2, 32, 33],
             ['HV', .075, .825, 17, 2, 34, 35],
             ['LV', .375, .025, 18, 3, 36, 37],
-            ['LDR', .15, .15, 19, 3, 38, 39], # LDR
             ['LDV', .225, .025, 20, 3, 40, 41],
             ['FV', .375, .8, 21, 3, 42, 43],
             ['FDR', .15, .65, 22, 3, 44, 45],
@@ -696,12 +696,16 @@ class CenterFrame:
 # Time Frame  ------------------------------------------------------------------------------------------------------
 class TimeFrame:
     # Displays the current time on the GUI, still needs work
-    def __init__(self, parent):
-        timeFrame = tk.Frame(parent, bg="red", bd=5)
-        timeFrame.place(relx=.815, rely=.008, relwidth=.185, relheight=0.05)
 
-        timeLabel = tk.Label(timeFrame, text = "Hello")
-        timeLabel.place(relx=0.1, rely=0.1)
+    def refresh_label(self):
+        self.timeLabel = tk.Label(self.timeFrame, bg="gray", text=datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
+        self.timeLabel.place(relx=0.1, rely=0.1)
+        self.timeFrame.after(1000, self.refresh_label)
+
+    def __init__(self, parent):
+        self.timeFrame = tk.Frame(parent, bg="gray", bd=5)
+        self.timeFrame.place(relx=.815, rely=.008, relwidth=.185, relheight=0.05)
+        self.timeFrame.after(1000, self.refresh_label)
 
         # clockFrame = self.TelemetryNode(timeFrame)
 
