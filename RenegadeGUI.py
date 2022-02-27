@@ -3,7 +3,8 @@ import signal
 import tkinter as tk
 from threading import Thread
 import time
-from tkinter import font as tkFont  # for font size
+import tkinter.font as tk_font  # for font size
+# import subprocess
 # from matplotlib import pyplot as plt
 # from matplotlib.figure import Figure
 # import matplotlib.animation as animation
@@ -16,6 +17,7 @@ import can  # //////////////////////////////////////////////////////////////////
 # from CanSend import CanSend
 from CanReceive import CanReceive
 
+# This code is initializing the bus variable with the channel and bustype.
 bus = can.interface.Bus(channel='can0', bustype='socketcan')  # ///////////////
 
 
@@ -34,75 +36,75 @@ class Main:
         root = tk.Tk()
         # Main Frame --------------------------------------------------------------------------------------------
         # All the frames will be placed inside the main frame
-        mainFrame = tk.Frame(root, bg="Black", bd=5)
-        mainFrame.place(relx=0, rely=0, relwidth=1, relheight=1)
+        main_frame = tk.Frame(root, bg="Black", bd=5)
+        main_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
 
         # Each Frame has its own class
         # Top Frame --------------------------------------------------------------------------------------------
         # Contains all the telemetry data
-        TopFrame(mainFrame)
+        TopFrame(main_frame)
         # Time Frame --------------------------------------------------------------------------------------------
         # Displays the current time
-        TimeFrame(mainFrame)
+        TimeFrame(main_frame)
         # Left Frame --------------------------------------------------------------------------------------------
         # Contains all the Operational States
-        leftFrame = LeftFrame(mainFrame)
+        left_frame = LeftFrame(main_frame)
         # Right Frame --------------------------------------------------------------------------------------------
         # Contains Several Graphs
-        RightFrame(mainFrame)
+        RightFrame(main_frame)
         # Center Frame --------------------------------------------------------------------------------------------
         # Displays the Propulsion Feed System
         # Displays the actuation state of individual valves and sensor readings
         # Allows for access to actuate individual valves when system is in Test mode
         # Getting the png to show wasn't working when inside the class, so I brought it out to main class
         # to then give the Center Class the frame with the PNG already on it
-        centerFrame = tk.Frame(mainFrame, bg="Black")
-        centerFrame.place(relx=0.11, rely=0.2, relwidth=0.7, relheight=0.65)
+        center_frame = tk.Frame(main_frame, bg="Black")
+        center_frame.place(relx=0.11, rely=0.2, relwidth=0.7, relheight=0.65)
         # # Put schematic draft for layout
         # schematicImage = tk.PhotoImage(file="Images\GUI Prop Layout.png")
         # schematicLabel = tk.Label(centerFrame, image=schematicImage, bg="black")
         # schematicLabel.place(relx=0, rely=0, relwidth=1, relheight=1)
-        CenterFrame(centerFrame)
+        CenterFrame(center_frame)
         # Bottom Frame --------------------------------------------------------------------------------------------
         # Bottom Frame Getting the png to show wasn't working when inside the class, so I brought it out to main class
         # to then give the Bottom Class the frame with the PNG already on it
         # Bottom Frame takes in the left frame to allow for the Vent and Abort functions to modify the states in the
         # left frame
-        bottomFrame = tk.Frame(mainFrame, bg="Black")
-        bottomFrame.place(relx=0.14, rely=0.85, relwidth=0.65, relheight=0.2)
+        bottom_frame = tk.Frame(main_frame, bg="Black")
+        bottom_frame.place(relx=0.14, rely=0.85, relwidth=0.65, relheight=0.2)
 
         # Graphics import and placements -----------------------------------------------------------------------
         #         RenegadeLOGOSAD = tk.PhotoImage(file="/home/pi/Documents/GUI Images/Sad Renegade LOGO.png")
         #         logo2 = tk.Label(bottomFrame, image=RenegadeLOGOSAD, bg = "black")
         #         logo2.place(relx=0.315, rely='-.1250')
 
-        RenegadeLOGO = tk.PhotoImage(file="GUI Images/RenegadeLogoSmall.png")
-        logo1 = tk.Label(bottomFrame, image=RenegadeLOGO, bg="black")
+        renegade_logo = tk.PhotoImage(file="GUI Images/RenegadeLogoSmall.png")
+        logo1 = tk.Label(bottom_frame, image=renegade_logo, bg="black")
         logo1.place(relx=.415, rely='-.1250')
 
         engine_art = tk.PhotoImage(file="GUI Images/Engine Clipart smol.png")
-        logo2 = tk.Label(centerFrame, image=engine_art, bg="black")
+        logo2 = tk.Label(center_frame, image=engine_art, bg="black")
         logo2.place(relx=.735, rely=.40)
 
         lox_tank_art = tk.PhotoImage(file="GUI Images/TankPlainClipart.png")
-        logo3 = tk.Label(centerFrame, image=lox_tank_art, bg="black")
+        logo3 = tk.Label(center_frame, image=lox_tank_art, bg="black")
         logo3.place(relx=.475, rely=.2)
 
         fuel_tank_art = tk.PhotoImage(file="GUI Images/TankPlainClipart.png")
-        logo4 = tk.Label(centerFrame, image=fuel_tank_art, bg="black")
+        logo4 = tk.Label(center_frame, image=fuel_tank_art, bg="black")
         logo4.place(relx=.475, rely=.615)
 
         copv_tank_art = tk.PhotoImage(file="GUI Images/TankPlainClipartCOPV.png")
-        logo5 = tk.Label(centerFrame, image=copv_tank_art, bg="black")
+        logo5 = tk.Label(center_frame, image=copv_tank_art, bg="black")
         logo5.place(relx=.0, rely=.0)
 
         dome_reg_art = tk.PhotoImage(file="GUI Images/AquaDomeReg Clipart.png")
-        logo6 = tk.Label(centerFrame, image=dome_reg_art, bg="black")
+        logo6 = tk.Label(center_frame, image=dome_reg_art, bg="black")
         logo6.place(relx=.25, rely=.185)
-        logo7 = tk.Label(centerFrame, image=dome_reg_art, bg="black")
+        logo7 = tk.Label(center_frame, image=dome_reg_art, bg="black")
         logo7.place(relx=.25, rely=.5)
 
-        BottomFrame(bottomFrame, leftFrame)
+        BottomFrame(bottom_frame, left_frame)
 
         # Matplotlib Refresh Function call -----------------------------------------------------------------------
         # Calls the animation function and refreshes the matplotlib graphs every 1000 ms (1 second)
@@ -138,11 +140,11 @@ class TopFrame:
         self.TelemetryNode(self.top_frame)
         self.upper_prop_system_node = self.UpperPropSystemNode(self.top_frame)
         self.PadGroundNode(self.top_frame)
-        self.refreshLabel()
+        self.refresh_label()
 
-    def refreshLabel(self):
-        self.upper_prop_system_node.refreshLabel()
-        self.top_frame.after(100, self.refreshLabel)
+    def refresh_label(self):
+        self.upper_prop_system_node.refresh_label()
+        self.top_frame.after(100, self.refresh_label)
 
     # Currently, all Nodes follow the same code structure
     class TelemetryNode:
@@ -156,82 +158,83 @@ class TopFrame:
 
             # Coordinates are relative to the Top Frame --------------------------------------------------------------
             # Makes 4 labels and then stores them in a list
-            telemetryLabels = []
+            telemetry_labels = []
             for i in range(4):
                 placed_label = tk.Label(telemetry_frame, text="", bg="grey", anchor="w")
                 placed_label.place(relx=0, rely=(1 / 4) * i, relwidth=2 / 3, relheight=1 / 4)
-                telemetryLabels.append(placed_label)
+                telemetry_labels.append(placed_label)
             # Gives each label a text
-            telemetryLabels[0]["text"] = "Telemetry Node"
-            telemetryLabels[1]["text"] = "Activity: "
-            telemetryLabels[2]["text"] = "Temp: "
-            telemetryLabels[3]["text"] = "Bus Info"
+            telemetry_labels[0]["text"] = "Telemetry Node"
+            telemetry_labels[1]["text"] = "Activity: "
+            telemetry_labels[2]["text"] = "Temp: "
+            telemetry_labels[3]["text"] = "Bus Info"
 
             # Shows the current state of the node
-            nodeState = tk.Label(telemetry_frame, text="Default State", bg="black", fg="white")
-            nodeState.place(relx=2 / 3, rely=2 / 3, relwidth=(1 / 3), relheight=1 / 3)
-            # Reset button
-            resetButton = tk.Button(telemetry_frame, text="Reset", command=lambda: Reset(),
-                                    font=("Verdana", 10),
-                                    fg='black', bg='white')
-            resetButton.place(relx=3 / 4, rely=0, relwidth=1 / 4, relheight=1 / 3)
+            node_state = tk.Label(telemetry_frame, text="Default State", bg="black", fg="white")
+            node_state.place(relx=2 / 3, rely=2 / 3, relwidth=(1 / 3), relheight=1 / 3)
+            # reset button
+            reset_button = tk.Button(telemetry_frame, text="reset", command=lambda: reset(),
+                                     font=("Verdana", 10),
+                                     fg='black', bg='white')
+            reset_button.place(relx=3 / 4, rely=0, relwidth=1 / 4, relheight=1 / 3)
             self.GUI_objects['TelemetryFrame'] = telemetry_frame
-            self.GUI_objects['TelemetryLabels'] = telemetryLabels
-            self.GUI_objects['NodeState'] = nodeState
-            self.GUI_objects['resetButton'] = resetButton
+            self.GUI_objects['TelemetryLabels'] = telemetry_labels
+            self.GUI_objects['NodeState'] = node_state
+            self.GUI_objects['resetButton'] = reset_button
 
     class UpperPropSystemNode:
         NodeStateContainer = []
 
         def __init__(self, parent):
-            upperPropSystemFrame = tk.Frame(parent, bg="grey", bd=5)
-            upperPropSystemFrame.place(relx=(1 / 3 + 0.0015), rely=0, relwidth=(1 / 3.1), relheight=1)
+            upper_prop_system_frame = tk.Frame(parent, bg="grey", bd=5)
+            upper_prop_system_frame.place(relx=(1 / 3 + 0.0015), rely=0, relwidth=(1 / 3.1), relheight=1)
 
-            upperPropSystemLabels = []
+            upper_prop_system_labels = []
             for i in range(4):
-                label = tk.Label(upperPropSystemFrame, text="", bg="grey", anchor="w")
-                upperPropSystemLabels.append(label)
+                label = tk.Label(upper_prop_system_frame, text="", bg="grey", anchor="w")
+                upper_prop_system_labels.append(label)
                 label.place(relx=0, rely=(1 / 4) * i, relwidth=2 / 3, relheight=1 / 4)
 
-            upperPropSystemLabels[0]["text"] = "Upper Prop System Node"
-            upperPropSystemLabels[1]["text"] = "Activity: "
-            upperPropSystemLabels[2]["text"] = "MCU Temp: "
-            upperPropSystemLabels[3]["text"] = "Bus Info"
+            upper_prop_system_labels[0]["text"] = "Upper Prop System Node"
+            upper_prop_system_labels[1]["text"] = "Activity: "
+            upper_prop_system_labels[2]["text"] = "MCU Temp: "
+            upper_prop_system_labels[3]["text"] = "Bus Info"
 
-            nodeState = tk.Label(upperPropSystemFrame, text="Hi", bg="black",
-                                 fg="white")
-            self.NodeStateContainer.append(nodeState)
-            nodeState.place(relx=2 / 3, rely=2 / 3, relwidth=(1 / 3), relheight=1 / 3)
+            node_state = tk.Label(upper_prop_system_frame, text="Hi", bg="black",
+                                  fg="white")
+            self.NodeStateContainer.append(node_state)
+            node_state.place(relx=2 / 3, rely=2 / 3, relwidth=(1 / 3), relheight=1 / 3)
 
-            resetButton = tk.Button(upperPropSystemFrame, text="Reset", command=lambda: Reset(), font=("Verdana", 10),
-                                    fg='black', bg='white')
-            resetButton.place(relx=3 / 4, rely=0, relwidth=1 / 4, relheight=1 / 3)
-            self.refreshLabel()
+            reset_button = tk.Button(upper_prop_system_frame, text="reset", command=lambda: reset(),
+                                     font=("Verdana", 10),
+                                     fg='black', bg='white')
+            reset_button.place(relx=3 / 4, rely=0, relwidth=1 / 4, relheight=1 / 3)
+            self.refresh_label()
 
-        def refreshLabel(self):
+        def refresh_label(self):
             self.NodeStateContainer[0].config(text=str(can_receive.upper_prop_node_dict["state"]))
 
     class PadGroundNode:
         def __init__(self, parent):
-            padGroundFrame = tk.Frame(parent, bg="grey", bd=5)
-            padGroundFrame.place(relx=(2 / 3 + 0.0015), rely=0, relwidth=(1 / 3.1), relheight=1)
-            padGroundLabels = []
+            pad_ground_frame = tk.Frame(parent, bg="grey", bd=5)
+            pad_ground_frame.place(relx=(2 / 3 + 0.0015), rely=0, relwidth=(1 / 3.1), relheight=1)
+            pad_ground_labels = []
             for i in range(4):
-                label = tk.Label(padGroundFrame, text="", bg="grey", anchor="w")
-                padGroundLabels.append(label)
+                label = tk.Label(pad_ground_frame, text="", bg="grey", anchor="w")
+                pad_ground_labels.append(label)
                 label.place(relx=0, rely=(1 / 4) * i, relwidth=2 / 3, relheight=1 / 4)
 
-            padGroundLabels[0]["text"] = "Pad Ground Node"
-            padGroundLabels[1]["text"] = "Activity: "
-            padGroundLabels[2]["text"] = "MCU Temp: "
-            padGroundLabels[3]["text"] = "Bus Info"
+            pad_ground_labels[0]["text"] = "Pad Ground Node"
+            pad_ground_labels[1]["text"] = "Activity: "
+            pad_ground_labels[2]["text"] = "MCU Temp: "
+            pad_ground_labels[3]["text"] = "Bus Info"
 
-            nodeState = tk.Label(padGroundFrame, text="Default State", bg="black", fg="white")
-            nodeState.place(relx=2 / 3, rely=2 / 3, relwidth=(1 / 3), relheight=1 / 3)
+            node_state = tk.Label(pad_ground_frame, text="Default State", bg="black", fg="white")
+            node_state.place(relx=2 / 3, rely=2 / 3, relwidth=(1 / 3), relheight=1 / 3)
 
-            resetButton = tk.Button(padGroundFrame, text="Reset", command=lambda: Reset(), font=("Verdana", 10),
-                                    fg='black', bg='white')
-            resetButton.place(relx=3 / 4, rely=0, relwidth=1 / 4, relheight=1 / 3)
+            reset_button = tk.Button(pad_ground_frame, text="reset", command=lambda: reset(), font=("Verdana", 10),
+                                     fg='black', bg='white')
+            reset_button.place(relx=3 / 4, rely=0, relwidth=1 / 4, relheight=1 / 3)
 
 
 # Left Frame --------------------------------------------------------------------------------------------
@@ -277,7 +280,7 @@ class LeftFrame:
         self.leftFrame.place(relx=0.0001, rely=1 / 5, relwidth=.1, relheight=0.8)
 
         # Font Size used for some labels
-        self.fontSize1 = tkFont.Font(size=17)
+        self.fontSize1 = tk_font.Font(size=17)
 
         # Creates label for Passive/Standby State
         self.passiveState = tk.Label(self.leftFrame, text="Passive", bg="grey", fg="Red", font=self.fontSize1)
@@ -292,7 +295,7 @@ class LeftFrame:
             prev = curr
 
     # Function is called by the Vent or Abort Buttons
-    def VentorAbort(self):
+    def vent_or_abort(self):
         # Resets every state in the state list
         prev = None
         for button in LeftFrame.States:
@@ -312,7 +315,7 @@ class LeftFrame:
             self.args = args
             # Creates Button for that State
             # Coordinates Relative to Left Frame
-            self.Button = tk.Button(parent, text=self.args[0], command=lambda: self.StateActuation(),
+            self.Button = tk.Button(parent, text=self.args[0], command=lambda: self.state_actuation,
                                     font=("Verdana", 10), fg='red', bg='black')
             self.Button.place(relx=0, rely=((1 / 7.5) * (self.args[1] - 1)) - 1 / 16, relwidth=1, relheight=1 / 7.5)
 
@@ -327,10 +330,11 @@ class LeftFrame:
             self.isAnArmState = args[4]  # True is the State is an Arm State
 
             # Font Size used for some labels
-            self.fontSize1 = tkFont.Font(size=20)
+            self.fontSize1 = tk_font.Font(size=20)
 
         # Stores the logic for the transition between States ----------------------------------------------------------
-        def StateActuation(self):
+        @property
+        def state_actuation(self):
             # If the Current state is not in Test Mode
             # If the Test Mode is not enabled
             #   These may sound redundant, but you can be in another state and test mode be enabled for overrides
@@ -341,7 +345,7 @@ class LeftFrame:
                 # If the button pressed is the Purge button
                 if self.stateName == "Purge":
                     # Shows the Purge State as Enabled/ Green
-                    self.Button = tk.Button(self.parent, text=self.args[0], command=lambda: self.StateActuation(),
+                    self.Button = tk.Button(self.parent, text=self.args[0], command=lambda: self.state_actuation,
                                             font=("Verdana", 10), fg='green', bg='black')
                     self.Button.place(relx=0, rely=((1 / 9) * (self.args[1] - 1)) - 1 / 18, relwidth=1, relheight=1 / 9)
 
@@ -364,11 +368,11 @@ class LeftFrame:
                     # Updates the Buttons to show the updated states
                     # Current state gets de-enabled/red
                     # Previous state gets enabled/green
-                    self.Button = tk.Button(self.parent, text=self.args[0], command=lambda: self.StateActuation(),
+                    self.Button = tk.Button(self.parent, text=self.args[0], command=lambda: self.state_actuation,
                                             font=("Verdana", 10), fg='red', bg='black')
                     self.Button.place(relx=0, rely=((1 / 9) * (self.args[1] - 1)) - 1 / 18, relwidth=1, relheight=1 / 9)
                     self.prevState.Button = tk.Button(self.parent, text=self.prevState.args[0],
-                                                      command=lambda: self.prevState.StateActuation(),
+                                                      command=lambda: self.prevState.state_actuation,
                                                       font=("Verdana", 10), fg='green', bg='black')
                     self.prevState.Button.place(relx=0, rely=((1 / 9) * (self.prevState.args[1] - 1)) - 1 / 18,
                                                 relwidth=1, relheight=1 / 9)
@@ -385,12 +389,12 @@ class LeftFrame:
                 # This is the main form of state transition
                 if LeftFrame.CurrState[0] == self.prevState.stateName:
                     # State pressed gets enabled/green and previous state gets de-enabled/red
-                    self.Button = tk.Button(self.parent, text=self.args[0], command=lambda: self.StateActuation(),
+                    self.Button = tk.Button(self.parent, text=self.args[0], command=lambda: self.state_actuation,
                                             font=("Verdana", 10), fg='green', bg='black')
                     self.Button.place(relx=0, rely=((1 / 9) * (self.args[1] - 1)) - 1 / 18, relwidth=1,
                                       relheight=1 / 9)
                     self.prevState.Button = tk.Button(self.parent, text=self.prevState.args[0],
-                                                      command=lambda: self.prevState.StateActuation(),
+                                                      command=lambda: self.prevState.state_actuation,
                                                       font=("Verdana", 10), fg='red', bg='black')
                     self.prevState.Button.place(relx=0, rely=((1 / 9) * (self.prevState.args[1] - 1)) - 1 / 18,
                                                 relwidth=1, relheight=1 / 9)
@@ -413,7 +417,7 @@ class LeftFrame:
                 if not LeftFrame.TestState:
                     # Enable test mode and update the state displays
                     LeftFrame.TestState = True
-                    self.Button = tk.Button(self.parent, text=self.args[0], command=lambda: self.StateActuation(),
+                    self.Button = tk.Button(self.parent, text=self.args[0], command=lambda: self.state_actuation,
                                             font=("Verdana", 10), fg='green', bg='black')
                     self.Button.place(relx=0, rely=((1 / 9) * (self.args[1] - 1)) - 1 / 18, relwidth=1, relheight=1 / 9)
                     msg = can.Message(arbitration_id=self.commandID, data=[self.commandON],
@@ -424,7 +428,7 @@ class LeftFrame:
                 else:
                     # Disable Test mode
                     LeftFrame.TestState = False
-                    self.Button = tk.Button(self.parent, text=self.args[0], command=lambda: self.StateActuation(),
+                    self.Button = tk.Button(self.parent, text=self.args[0], command=lambda: self.state_actuation,
                                             font=("Verdana", 10), fg='red', bg='black')
                     self.Button.place(relx=0, rely=((1 / 9) * (self.args[1] - 1)) - 1 / 18, relwidth=1, relheight=1 / 9)
                     msg = can.Message(arbitration_id=self.commandID, data=[self.commandOFF],
@@ -461,10 +465,10 @@ class BottomFrame:
     class Button:
         def __init__(self, parent, args, left_frame, other=None):
             # Font size for the buttons
-            self.fontSize = tkFont.Font(size=26)
+            self.fontSize = tk_font.Font(size=26)
 
             # Instantiate buttons
-            self.Button = tk.Button(parent, text=args[0], font=self.fontSize, command=lambda: self.ValveActuation(),
+            self.Button = tk.Button(parent, text=args[0], font=self.fontSize, command=lambda: self.valve_actuation(),
                                     fg='red', bg='grey')
             self.Button.place(relx=args[1], rely=0, relheight=1, relwidth=1 / 4)
             self.status = False
@@ -483,14 +487,14 @@ class BottomFrame:
             self.other = other
 
         # Logic for the vent and abort
-        def ValveActuation(self):
+        def valve_actuation(self):
             # Calls function from LeftFrame to reset all the state labels
-            LeftFrame.VentorAbort(self.leftFrame)
+            LeftFrame.vent_or_abort(self.leftFrame)
             # If the state is currently off, turn it on
             if not self.status:
                 # Updates the display
                 self.Button = tk.Button(self.parent, text=self.args[0], font=self.fontSize,
-                                        command=lambda: self.ValveActuation(),
+                                        command=lambda: self.valve_actuation(),
                                         fg='green', bg='grey')
                 self.Button.place(relx=self.args[1], rely=0, relheight=1, relwidth=1 / 4)
                 # Sets the state to true
@@ -499,7 +503,7 @@ class BottomFrame:
                 # if the other state (Vent or abort) is currently on, turn it off
                 if self.other.status:
                     self.other.Button = tk.Button(self.parent, text=self.other.args[0], font=self.fontSize,
-                                                  command=lambda: self.other.ValveActuation(),
+                                                  command=lambda: self.other.valve_actuation(),
                                                   fg='red', bg='grey')
                     self.other.Button.place(relx=self.other.args[1], rely=0, relheight=1, relwidth=1 / 4)
                     self.other.status = False
@@ -510,7 +514,7 @@ class BottomFrame:
             else:  # Turns off the state pressed
                 self.status = False
                 self.Button = tk.Button(self.parent, text=self.args[0], font=self.fontSize,
-                                        command=lambda: self.ValveActuation(),
+                                        command=lambda: self.valve_actuation(),
                                         fg='red', bg='grey')
                 self.Button.place(relx=self.args[1], rely=0, relheight=1, relwidth=1 / 4)
                 msg = can.Message(arbitration_id=self.commandID, data=[self.commandOFF], is_extended_id=False)  # ////
@@ -533,10 +537,11 @@ class CenterFrame:
 
         # Data needed to set up the button
         # [ Valve Name, relx ,rely , State ID , commandID, commandOFF , commandON]
-        Valves = [
+        valves = [
             ['HP', 0, .65, 16, 2, 32, 33],
             ['HV', .075, .825, 17, 2, 34, 35],
             ['LV', .375, .025, 18, 3, 36, 37],
+            ['LDR', .15, .15, 19, 3, 38, 39],  # LDR
             ['LDV', .225, .025, 20, 3, 40, 41],
             ['FV', .375, .8, 21, 3, 42, 43],
             ['FDR', .15, .65, 22, 3, 44, 45],
@@ -548,10 +553,10 @@ class CenterFrame:
         self.valve_list = []
 
         # Creates a button for each valve
-        for valve in Valves:
+        for valve in valves:
             self.valve_list.append(self.Valve(parent, valve))
 
-        Sensors = [
+        sensors = [
             ["COPV LOx", 0.06, 0.0125, 0.075, 0.00, 84],
             ["COPV Fuel", 0.06, 0.055, 0.075, 0.00, 83],
             ["Fuel Tank", 0.505, 0.575, 0.06, 0.04, 81],
@@ -580,26 +585,28 @@ class CenterFrame:
         # stores each sensor in the list
         self.sensorList = []
         # Instantiates each sensor in the Sensors list
-        for sensor in Sensors:
+        for sensor in sensors:
             self.sensorList.append(self.Sensor(parent, sensor))
 
         # Refreshlabel() Refreshes the Readings
-        self.RefreshLabel()
+        self.refresh_label()
 
     # Readings Refresher, Recursive Function
-    def RefreshLabel(self):
+    def refresh_label(self):
         # print(CanReceive.ValveState)
         # for each sensor in the sensor list. refresh the label
         for sensor in self.sensorList:
             # calls the sensors label refresh function
-            sensor.RefreshLabel()
+            sensor.refresh_label()
+        for valve in self.valve_list:
+            valve.refresh_valve()
         #         # recalls this function after 500 ms
         #         if CanReceive.ValveState != LeftFrame.currValveState:
         #             for i in CanReceive.ValveState:
         #                 if CanReceive.ValveState[i] != LeftFrame.currValveState[i]:
         # for valve in self.valve_list:
 
-        self.sensorList[1].ReadingLabel.after(250, self.RefreshLabel)
+        self.sensorList[1].ReadingLabel.after(250, self.refresh_label)
 
     # Instantiate Sensor
     class Sensor:
@@ -607,7 +614,7 @@ class CenterFrame:
             # Makes label with name of sensor
             self.label = tk.Label(parent, text=args[0], font=("Verdana", 10), fg='white', bg='black')
             self.label.place(relx=args[1], rely=args[2], anchor="nw")
-            # Makes label with the reading for its corresonding sensor
+            # Makes label with the reading for its corresponding sensor
             self.ReadingLabel = tk.Label(parent, text="N/A", font=("Verdana", 10), fg='orange', bg='black')
             self.ReadingLabel.place(relx=args[1] + args[3], rely=args[2] + args[4], anchor="nw")
             # self.SensorID = args[3]
@@ -615,7 +622,7 @@ class CenterFrame:
 
         # Updates the reading
         # Gets called by the Center Frame class
-        def RefreshLabel(self):
+        def refresh_label(self):
             # value = random.randint(1, 100)  # CanReceive.getVar(self.SensorID)
             if self.stateID == 0:
                 value = 0
@@ -627,10 +634,13 @@ class CenterFrame:
     class Valve:
         def __init__(self, parent, args):
             # Makes button that can be used by user to actuate valve
-            self.photo = tk.PhotoImage(file="GUI Images/" + args[0] + "Button.png").subsample(5)
-            self.Button = tk.Button(parent, image=self.photo, command=lambda: self.TwoFactorAuthentication(),
+            self.photoname = args[0]
+            self.x_pos = args[1]
+            self.y_pos = args[2]
+            self.photo = tk.PhotoImage(file="GUI Images/" + self.photoname + "Button.png").subsample(5)
+            self.Button = tk.Button(parent, image=self.photo, command=lambda: self.two_factor_authentication(),
                                     font=("Verdana", 10), fg='red', bg='black')
-            self.Button.place(relx=args[1], rely=args[2])
+            self.Button.place(relx=self.x_pos, rely=self.y_pos)
 
             self.status = False  # Keeps track of valve actuation state
 
@@ -645,26 +655,41 @@ class CenterFrame:
             self.time1 = time.time()
             self.time2 = 0
 
-        # Two-Factor Authentication
+        def refresh_valve(self):
+            pass
+            # if int(time.time()) % 1 == 0 and int(time.time()) % 2 != 0:
+            #     print("Button update 2 to Enabled")
+            #     self.photo = tk.PhotoImage(file="GUI Images/" + self.photoname + "Button.png").subsample(5)
+            #     self.Button = tk.Button(self.parent, image=self.photo, command=lambda: self.two_factor_authentication(),
+            #                             font=("Verdana", 10), fg='red', bg='black')
+            #     self.Button.place(relx=self.x_pos, rely=self.y_pos)
+            # if int(time.time()) % 2 == 0:
+            #     print("Button update 4 to Disabled")
+            #     self.photo = tk.PhotoImage(file="GUI Images/DisabledValve.png").subsample(5)
+            #     self.Button = tk.Button(self.parent, image=self.photo, command=lambda: self.two_factor_authentication(),
+            #                             font=("Verdana", 10), fg='red', bg='black')
+            #     self.Button.place(relx=self.x_pos, rely=self.y_pos)
+
+    # Two-Factor Authentication
         # Valve has to be pressed twice in the span of 1 second
         # In case someone spams the button press
         # At least half second needs to have passed from last valve actuation to be actuated again
-        # Calls ValveActuation() if TFA passed
-        def TwoFactorAuthentication(self):
+        # Calls valve_actuation() if TFA passed
+        def two_factor_authentication(self):
             if abs(self.time2 - self.time1) < 1:
                 self.time1 = time.time()
                 return 0
             if time.time() - self.time1 > 0.5:
                 self.time1 = time.time()
             else:
-                self.ValveActuation()
+                self.valve_actuation()
                 self.time1 = time.time()
             return 0
 
         # Sends out Can bus command for valve actuation
         # Can only be done if Test Mode is enabled
         # Updates UI to show Valve actuation state
-        def ValveActuation(self):
+        def valve_actuation(self):
             if not LeftFrame.TestState:
                 return 0
             self.time2 = time.time()  # stores the time at which the valve was actuated
@@ -672,8 +697,9 @@ class CenterFrame:
             # If valve is Off turn On
             if not self.status:
                 self.status = True
-                self.Button = tk.Button(self.parent, text=self.args[0], command=lambda: self.TwoFactorAuthentication(),
-                                        font=("Verdana", 10), fg='green', bg='black')
+                self.Button = tk.Button(self.parent, text=self.args[0],
+                                        command=lambda: self.two_factor_authentication(), font=("Verdana", 10),
+                                        fg='green', bg='black')
                 self.Button.place(relx=self.args[1], rely=self.args[2])
                 msg = can.Message(arbitration_id=self.commandID, data=[self.commandON], is_extended_id=False)  # /////
                 bus.send(msg)  # ///////////////////////////////////////////////////////////////////////////////////
@@ -681,8 +707,9 @@ class CenterFrame:
 
             else:  # Vice versa
                 self.status = False
-                self.Button = tk.Button(self.parent, text=self.args[0], command=lambda: self.TwoFactorAuthentication(),
-                                        font=("Verdana", 10), fg='red', bg='black')
+                self.Button = tk.Button(self.parent, text=self.args[0],
+                                        command=lambda: self.two_factor_authentication(), font=("Verdana", 10),
+                                        fg='red', bg='black')
                 self.Button.place(relx=self.args[1], rely=self.args[2])
                 msg = can.Message(arbitration_id=self.commandID, data=[self.commandOFF], is_extended_id=False)  # /////
                 bus.send(msg)  # ///////////////////////////////////////////////////////////////////////////////////
@@ -698,26 +725,26 @@ class TimeFrame:
     # Displays the current time on the GUI, still needs work
 
     def refresh_label(self):
-        self.timeLabel = tk.Label(self.timeFrame, bg="gray", text=datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
-        self.timeLabel.place(relx=0.1, rely=0.1)
-        self.timeFrame.after(1000, self.refresh_label)
+        time_label = tk.Label(self.time_frame, bg="gray", text=datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
+        time_label.place(relx=0.1, rely=0.1)
+        self.time_frame.after(1000, self.refresh_label)
 
     def __init__(self, parent):
-        self.timeFrame = tk.Frame(parent, bg="gray", bd=5)
-        self.timeFrame.place(relx=.815, rely=.008, relwidth=.185, relheight=0.05)
-        self.timeFrame.after(1000, self.refresh_label)
+        self.time_frame = tk.Frame(parent, bg="gray", bd=5)
+        self.time_frame.place(relx=.815, rely=.008, relwidth=.185, relheight=0.05)
+        self.time_frame.after(1000, self.refresh_label)
 
-        # clockFrame = self.TelemetryNode(timeFrame)
+        # clockFrame = self.TelemetryNode(time_frame)
 
 
 class RightFrame:
     def __init__(self, parent):
-        rightFrame = tk.Frame(parent, bg="grey", bd=5)
-        rightFrame.place(relx=.815, rely=.07, relwidth=.1875, relheight=.95)
+        right_frame = tk.Frame(parent, bg="grey", bd=5)
+        right_frame.place(relx=.815, rely=.07, relwidth=.1875, relheight=.95)
 
-        self.Graph1(rightFrame)
-        self.Graph2(rightFrame)
-        self.Graph3(rightFrame)
+        self.Graph1(right_frame)
+        self.Graph2(right_frame)
+        self.Graph3(right_frame)
 
     class Graph1:
         def __init__(self, parent):
@@ -769,8 +796,8 @@ class RightFrame:
 # a3 = f3.add_subplot(111)
 
 
-def Reset():
-    print("Reset")
+def reset():
+    print("reset")
 
 
 # Animate Function is used to animate and refresh the plots
@@ -801,6 +828,7 @@ x1, y1 = [0] * 20, [0] * 20
 
 
 if __name__ == '__main__':
+    # subprocess.call(['sh', './cansetup.sh'])
     GUI = Main()
     GUIThread = Thread(target=GUI.run)
     GUIThread.daemon = True
