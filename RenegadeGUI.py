@@ -641,6 +641,7 @@ class CenterFrame:
     class Valve:
         def __init__(self, parent, args):
             # Makes button that can be used by user to actuate valve
+            self.name = args[0]
             self.photoname = args[0]
             self.x_pos = args[1]
             self.y_pos = args[2]
@@ -649,7 +650,7 @@ class CenterFrame:
                                     font=("Verdana", 10), fg='red', bg='black')
             self.Button.place(relx=self.x_pos, rely=self.y_pos)
 
-            self.status = False  # Keeps track of valve actuation state
+            self.status = 0  # Keeps track of valve actuation state
 
             self.commandID = args[4]
             self.commandOFF = args[5]
@@ -663,7 +664,15 @@ class CenterFrame:
             self.time2 = 0
 
         def refresh_valve(self):
-            pass
+            if self.name in can_receive.node_state and self.status is not can_receive.node_state[self.name]:
+                if can_receive.node_state[self.name] == 0:
+                    self.photoname = "Disabled"
+                else:
+                    self.photoname = self.name
+                self.photo = tk.PhotoImage(file="GUI Images/" + self.photoname + "Button.png").subsample(5)
+                self.Button = tk.Button(self.parent, image=self.photo, command=lambda: self.two_factor_authentication(),
+                                             font=("Verdana", 10), fg='red', bg='black')
+                self.Button.place(relx=self.x_pos, rely=self.y_pos)
             # if int(time.time()) % 1 == 0 and int(time.time()) % 2 != 0:
             #     print("Button update 2 to Enabled")
             #     self.photo = tk.PhotoImage(file="GUI Images/" + self.photoname + "Button.png").subsample(5)
@@ -672,7 +681,7 @@ class CenterFrame:
             #     self.Button.place(relx=self.x_pos, rely=self.y_pos)
             # if int(time.time()) % 2 == 0:
             #     print("Button update 4 to Disabled")
-            #     self.photo = tk.PhotoImage(file="GUI Images/DisabledValve.png").subsample(5)
+            #     self.photo = tk.PhotoImage(file="GUI Images/DisabledButton.png").subsample(5)
             #     self.Button = tk.Button(self.parent, image=self.photo, command=lambda: self.two_factor_authentication(),
             #                             font=("Verdana", 10), fg='red', bg='black')
             #     self.Button.place(relx=self.x_pos, rely=self.y_pos)
