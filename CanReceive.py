@@ -4,7 +4,7 @@ from bitstring import BitArray
 from bitarray.util import ba2int
 
 
-class ValveDevice:
+class ValveDevice:  # Represents a valve logically
     valve_id: int = 0
     valve_state: int = 0
 
@@ -13,12 +13,12 @@ class ValveDevice:
         self.valve_state = state
 
 
-class ValveNodeState:
-    id: int = 0
-    state = "Default State"
-    autosequence: bool = False
-    valve_enable = []
-    valves = []
+class ValveNodeState:  # Represents a valve node logically, parses data
+    id: int = 0  # ID of the node
+    state = "Default State"  # String to represent current state node is in, looked up from node_state_arr
+    autosequence: bool = False  # Autosequence bool
+    valve_enable = []  # List of 3 valve enable bools
+    valves = []  # List of ValveDevice objects to represent the valve states of each node
 
     node_state_arr = ("Debug Mode",
                       "Passivated State",
@@ -43,60 +43,18 @@ class ValveNodeState:
             self.state = "Default State"
             self.autosequence = False
         else:
-            state_num = bit_array_to_dec(can_message[0:4])
+            state_num = ba2int(bitarray(can_message[0:4]))
             if state_num > 7:
                 self.state = str(state_num)
             else:
-                self.state = self.node_state_arr[bit_array_to_dec(can_message[0:4])]
+                self.state = self.node_state_arr[ba2int(bitarray(can_message[0:4]))]
             self.valve_enable = can_message[4:7]
             self.autosequence = can_message[7]
             for i in range(8, len(can_message), 8):
-                valve_id = bit_array_to_dec(can_message[i:i + 5])
-                valve_state = bit_array_to_dec(can_message[i + 5:i + 8])
+                valve_id = ba2int(bitarray(can_message[i:i + 5]))
+                valve_state = ba2int(bitarray(can_message[i + 5:i + 8]))
                 valve = ValveDevice(valve_id, valve_state)
                 self.valves.append(valve)
-
-
-# def can_message_to_bit_array(can_msg):
-#     # Quick and dirty binary translator since I couldn't find a python implementation I liked
-#     # This array holds values between 0-15 as array indexes
-#     bin_translator = (
-#         (0, 0, 0, 0),
-#         (0, 0, 0, 1),
-#         (0, 0, 1, 0),
-#         (0, 0, 1, 1),
-#         (0, 1, 0, 0),
-#         (0, 1, 0, 1),
-#         (0, 1, 1, 0),
-#         (0, 1, 1, 1),
-#         (1, 0, 0, 0),
-#         (1, 0, 0, 1),
-#         (1, 0, 1, 0),
-#         (1, 0, 1, 1),
-#         (1, 1, 0, 0),
-#         (1, 1, 0, 1),
-#         (1, 1, 1, 0),
-#         (1, 1, 1, 1)
-#     )
-#     out_arr = []
-#     for i in can_msg:
-#         for j in i:
-#             print("J: " + j)
-#             bin_nums = bin_translator[int(j, base=16)]
-#             for k in bin_nums:
-#                 out_arr.append(k == 1)
-#     return out_arr
-
-
-def bit_array_to_dec(inp_array):
-    # out_num = 0
-    # pow_val = 0
-    # for i in reversed(inp_array):
-    #     if i:
-    #         out_num += 2 ** pow_val
-    #     pow_val += 1
-    out_num = ba2int(bitarray(inp_array))
-    return out_num
 
 
 class CanReceive:
@@ -138,6 +96,7 @@ class CanReceive:
     def run(self):
         bus_type = 'socketcan'
         channel0 = 'can0'
+        # noinspection PyTypeChecker
         bus_receive = can.interface.Bus(channel=channel0, bustype=bus_type)
         while self.loop:
             msg_in = bus_receive.recv(timeout=None)

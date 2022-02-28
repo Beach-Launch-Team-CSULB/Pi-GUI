@@ -18,6 +18,7 @@ import can  # //////////////////////////////////////////////////////////////////
 from CanReceive import CanReceive
 
 # This code is initializing the bus variable with the channel and bustype.
+# noinspection PyTypeChecker
 bus = can.interface.Bus(channel='can0', bustype='socketcan')  # ///////////////
 
 
@@ -642,10 +643,10 @@ class CenterFrame:
         def __init__(self, parent, args):
             # Makes button that can be used by user to actuate valve
             self.name = args[0]
-            self.photoname = args[0]
+            self.photo_name = args[0]
             self.x_pos = args[1]
             self.y_pos = args[2]
-            self.photo = tk.PhotoImage(file="GUI Images/" + self.photoname + "Button.png").subsample(5)
+            self.photo = tk.PhotoImage(file="GUI Images/" + self.photo_name + "Button.png").subsample(5)
             self.Button = tk.Button(parent, image=self.photo, command=lambda: self.two_factor_authentication(),
                                     font=("Verdana", 10), fg='red', bg='black')
             self.Button.place(relx=self.x_pos, rely=self.y_pos)
@@ -666,25 +667,13 @@ class CenterFrame:
         def refresh_valve(self):
             if self.name in can_receive.node_state and self.status is not can_receive.node_state[self.name]:
                 if can_receive.node_state[self.name] == 0:
-                    self.photoname = "Disabled"
+                    self.photo_name = "Disabled"
                 else:
-                    self.photoname = self.name
-                self.photo = tk.PhotoImage(file="GUI Images/" + self.photoname + "Button.png").subsample(5)
+                    self.photo_name = self.name
+                self.photo = tk.PhotoImage(file="GUI Images/" + self.photo_name + "Button.png").subsample(5)
                 self.Button = tk.Button(self.parent, image=self.photo, command=lambda: self.two_factor_authentication(),
-                                             font=("Verdana", 10), fg='red', bg='black')
+                                        bg='black')
                 self.Button.place(relx=self.x_pos, rely=self.y_pos)
-            # if int(time.time()) % 1 == 0 and int(time.time()) % 2 != 0:
-            #     print("Button update 2 to Enabled")
-            #     self.photo = tk.PhotoImage(file="GUI Images/" + self.photoname + "Button.png").subsample(5)
-            #     self.Button = tk.Button(self.parent, image=self.photo, command=lambda: self.two_factor_authentication(),
-            #                             font=("Verdana", 10), fg='red', bg='black')
-            #     self.Button.place(relx=self.x_pos, rely=self.y_pos)
-            # if int(time.time()) % 2 == 0:
-            #     print("Button update 4 to Disabled")
-            #     self.photo = tk.PhotoImage(file="GUI Images/DisabledButton.png").subsample(5)
-            #     self.Button = tk.Button(self.parent, image=self.photo, command=lambda: self.two_factor_authentication(),
-            #                             font=("Verdana", 10), fg='red', bg='black')
-            #     self.Button.place(relx=self.x_pos, rely=self.y_pos)
 
         # Two-Factor Authentication
         # Valve has to be pressed twice in the span of 1 second
