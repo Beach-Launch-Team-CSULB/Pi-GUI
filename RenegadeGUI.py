@@ -139,11 +139,12 @@ class TopFrame:
         # they may all be operated differently in the future
         self.TelemetryNode(self.top_frame)
         self.upper_prop_system_node = self.UpperPropSystemNode(self.top_frame)
-        self.PadGroundNode(self.top_frame)
+        self.pad_ground_node = self.PadGroundNode(self.top_frame)
         self.refresh_label()
 
     def refresh_label(self):
         self.upper_prop_system_node.refresh_label()
+        self.pad_ground_node.refresh_label()
         self.top_frame.after(100, self.refresh_label)
 
     # Currently, all Nodes follow the same code structure
@@ -212,9 +213,11 @@ class TopFrame:
             self.refresh_label()
 
         def refresh_label(self):
-            self.NodeStateContainer[0].config(text=str(can_receive.upper_prop_node_dict["state"]))
+            self.NodeStateContainer[0].config(text=str(can_receive.node_dict_list["UpperPropNode"]["state"]))
 
     class PadGroundNode:
+        NodeStateContainer = []
+
         def __init__(self, parent):
             pad_ground_frame = tk.Frame(parent, bg="grey", bd=5)
             pad_ground_frame.place(relx=(2 / 3 + 0.0015), rely=0, relwidth=(1 / 3.1), relheight=1)
@@ -230,11 +233,15 @@ class TopFrame:
             pad_ground_labels[3]["text"] = "Bus Info"
 
             node_state = tk.Label(pad_ground_frame, text="Default State", bg="black", fg="white")
+            self.NodeStateContainer.append(node_state)
             node_state.place(relx=2 / 3, rely=2 / 3, relwidth=(1 / 3), relheight=1 / 3)
 
             reset_button = tk.Button(pad_ground_frame, text="reset", command=lambda: reset(), font=("Verdana", 10),
                                      fg='black', bg='white')
             reset_button.place(relx=3 / 4, rely=0, relwidth=1 / 4, relheight=1 / 3)
+
+        def refresh_label(self):
+            self.NodeStateContainer[0].config(text=str(can_receive.node_dict_list["PadGroundNode"]["state"]))
 
 
 # Left Frame --------------------------------------------------------------------------------------------
@@ -670,7 +677,7 @@ class CenterFrame:
             #                             font=("Verdana", 10), fg='red', bg='black')
             #     self.Button.place(relx=self.x_pos, rely=self.y_pos)
 
-    # Two-Factor Authentication
+        # Two-Factor Authentication
         # Valve has to be pressed twice in the span of 1 second
         # In case someone spams the button press
         # At least half second needs to have passed from last valve actuation to be actuated again
