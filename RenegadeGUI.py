@@ -11,7 +11,7 @@ import tkinter.font as tk_font  # for font size
 # from matplotlib import style
 # from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 # from PIL import Image, ImageTk
-# All Can bus lines will have the bottom dash lines to help show which lines to
+# All Can bus lines will have the bottom dash lines to help s2how which lines to
 # uncomment when on Pi or comment out when on a computer
 import can  # /////////////////////////////////////////////////////////////////////////
 # from CanSend import CanSend
@@ -19,7 +19,7 @@ from CanReceive import CanReceive
 
 # This code is initializing the bus variable with the channel and bustype.
 # noinspection PyTypeChecker
-bus = can.interface.Bus(channel='can0', bustype='socketcan')  # ///////////////
+bus = can.interface.Bus(channel='can1', bustype='socketcan')  # ///////////////
 
 
 # The style of graph matplotlib will be using
@@ -270,15 +270,15 @@ class LeftFrame:
 
     # Data needed to set up the button for each State
     # [ State Name, State ID , commandID, commandOFF , commandON, IfItsAnArmState]
-    States = [
-        ["Test", 2, 1, 4, 5, False],
-        ["Hi-Press\nPress Arm", 3, 1, 8, 9, True],
-        ["Hi-Press\nPressurize", 4, 1, 10, 11, False],
-        ["Tank Press \nArm", 5, 1, 12, 13, True],
-        ["Tank \nPressurize", 6, 1, 14, 15, False],
-        ["Fire Arm", 7, 1, 16, 17, True],
-        ["FIRE", 8, 1, 18, 19, False]
-    ]
+    States = (
+        ("Test", 2, 1, 4, 5, False),
+        ("Hi-Press\nPress Arm", 3, 1, 10, 11, True),
+        ("Hi-Press\nPressurize", 4, 1, 12, 13, False),
+        ("Tank Press \nArm", 5, 1, 14, 15, True),
+        ("Tank \nPressurize", 6, 1, 16, 17, False),
+        ("Fire Arm", 7, 1, 18, 19, True),
+        ("FIRE", 8, 1, 20, 21, False)
+    )
 
     # The class takes in the parent Frame (Main Frame) as an input
     def __init__(self, parent):
@@ -441,8 +441,8 @@ class BottomFrame:
     # Data needed to set up the button for each State
     # [ State Name, X coordinate]
     bottomButtons = [
-        ["Vent", 0, 1, 20, 21],
-        ["Abort", 3 / 4, 1, 22, 23]
+        ["Vent", 0, 1, 8, 9],
+        ["Abort", 3 / 4, 1, 6, 7]
     ]
 
     def __init__(self, parent, left_frame):
@@ -530,18 +530,18 @@ class CenterFrame:
 
         # Data needed to set up the button
         # [ Valve Name, relx ,rely , State ID , commandID, commandOFF , commandON]
-        valves = [
-            ['HP', 0, .65, 16, 2, 32, 33],
-            ['HV', .075, .825, 17, 2, 34, 35],
-            ['LV', .375, .025, 18, 3, 36, 37],
-            ['LDR', .15, .15, 19, 3, 38, 39],  # LDR
-            ['LDV', .225, .025, 20, 3, 40, 41],
-            ['FV', .375, .8, 21, 3, 42, 43],
-            ['FDR', .15, .65, 22, 3, 44, 45],
-            ['FDV', .225, .8, 17, 23, 3, 46, 47],
-            ['LMV', .815, 0.15, 24, 2, 48, 49],
-            ['FMV', .665, .15, 25, 2, 50, 51],
-        ]
+        valves = (
+            ('HP', 0, .65, 16, 2, 32, 33),
+            ('HV', .075, .825, 17, 2, 34, 35),
+            ('LV', .375, .025, 18, 3, 36, 37),
+            ('LDR', .15, .15, 19, 3, 38, 39),  # LDR
+            ('LDV', .225, .025, 20, 3, 40, 41),
+            ('FV', .375, .8, 21, 3, 42, 43),
+            ('FDR', .15, .65, 22, 3, 44, 45),
+            ('FDV', .225, .8, 17, 23, 3, 46, 47),
+            ('LMV', .815, 0.15, 24, 2, 48, 49),
+            ('FMV', .665, .15, 25, 2, 50, 51),
+        )
 
         self.valve_list = []
 

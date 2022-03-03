@@ -114,7 +114,9 @@ class CanReceive:
                     if i.valve_id > len(self.valve_state_arr[msg_id]):
                         node_name = int(str(msg_id) + str(i.valve_id))
                     else:
-                        node_name = self.valve_state_arr[msg_id][i.valve_id]
+                        print(msg_id)
+                        print(i.valve_id)
+                        node_name = self.valve_state_arr[msg_id][i.valve_id - 1]
                     self.node_state[node_name] = i.valve_state
 #             if datalist:
 #                 print(data)
