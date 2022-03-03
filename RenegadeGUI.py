@@ -325,7 +325,7 @@ class LeftFrame:
             # Coordinates Relative to Left Frame
             self.Button = tk.Button(parent, text=self.args[0], command=lambda: self.state_actuation,
                                     font=("Verdana", 10), fg='red', bg='black')
-            self.Button.place(relx=0, rely=((1 / 7.5) * (self.args[1] - 1)) - 1 / 16, relwidth=1, relheight=1 / 7.5)
+            self.Button.place(relx=0, rely=((1 / 8) * (self.args[1] - 1)) - 1 / 18, relwidth=1, relheight=1 / 8)
 
             # commandID, commandOFF, commandON are needed for the Can Commands
             self.commandID = self.args[2]
@@ -350,62 +350,46 @@ class LeftFrame:
             #       state conditions if needed
             # If the button pressed is not the Test Button, Test has different logic
             if LeftFrame.CurrState[0] != "Test" and not LeftFrame.TestState and self.stateName != "Test":
-                # If the button pressed is the Purge button
-                if self.stateName == "Purge":
-                    # Shows the Purge State as Enabled/ Green
-                    self.Button = tk.Button(self.parent, text=self.args[0], command=lambda: self.state_actuation,
-                                            font=("Verdana", 10), fg='green', bg='black')
-                    self.Button.place(relx=0, rely=((1 / 9) * (self.args[1] - 1)) - 1 / 18, relwidth=1, relheight=1 / 9)
-
-                    msg = can.Message(arbitration_id=self.commandID, data=[self.commandON],
-                                      is_extended_id=False)  # ////
-                    bus.send(msg)  # //////////////////////////////////////////////////////////////////////////////////
-
-                    # The System is now not in a passive State
-                    # Changes Label to show that it is now active
-                    self.passiveState = tk.Label(self.parent, text="Active", bg="grey", fg="Green", font=self.fontSize1)
-                    self.passiveState.place(relx=0, rely=0.0125, relwidth=1, relheight=1 / 30)
-
-                    # Updates the current state to the Purge State
-                    LeftFrame.CurrState = self.args
-
                 # If the current state is the same as the state pressed
                 # and the state pressed is an Arm State
                 # Arm States can be un armed if they pressed again, the current state will be set to the previous state
-                elif LeftFrame.CurrState[0] == self.stateName and self.isAnArmState:
+                if LeftFrame.CurrState[0] == self.stateName and self.isAnArmState:
                     # Updates the Buttons to show the updated states
                     # Current state gets de-enabled/red
                     # Previous state gets enabled/green
                     self.Button = tk.Button(self.parent, text=self.args[0], command=lambda: self.state_actuation,
                                             font=("Verdana", 10), fg='red', bg='black')
-                    self.Button.place(relx=0, rely=((1 / 9) * (self.args[1] - 1)) - 1 / 18, relwidth=1, relheight=1 / 9)
-                    self.prevState.Button = tk.Button(self.parent, text=self.prevState.args[0],
-                                                      command=lambda: self.prevState.state_actuation,
-                                                      font=("Verdana", 10), fg='green', bg='black')
-                    self.prevState.Button.place(relx=0, rely=((1 / 9) * (self.prevState.args[1] - 1)) - 1 / 18,
-                                                relwidth=1, relheight=1 / 9)
+                    self.Button.place(relx=0, rely=((1 / 8) * (self.args[1] - 1)) - 1 / 18, relwidth=1, relheight=1 / 8)
+                    if self.prevState.stateName != "Test":
+                        self.prevState.Button = tk.Button(self.parent, text=self.prevState.args[0],
+                                                          command=lambda: self.prevState.state_actuation,
+                                                          font=("Verdana", 10), fg='green', bg='black')
+                        self.prevState.Button.place(relx=0, rely=((1 / 8) * (self.prevState.args[1] - 1)) - 1 / 18,
+                                                    relwidth=1, relheight=1 / 8)
 
-                    # Can Bus
-                    msg = can.Message(arbitration_id=self.commandID, data=[self.commandON],
-                                      is_extended_id=False)  # //////////////////////////////////////////////////////
-                    bus.send(msg)  # //////////////////////////////////////////////////////////////////////////////////
-                    #                     CanSend.Sendsomebullshit()
-                    # Current state gets updated to be the previous state
-                    LeftFrame.CurrState = self.prevState.args
+                        # Can Bus
+                        msg = can.Message(arbitration_id=self.commandID, data=[self.commandON],
+                                          is_extended_id=False)  # //////////////////////////////////////////////////////
+                        bus.send(msg)  # //////////////////////////////////////////////////////////////////////////////////
+                        #                     CanSend.Sendsomebullshit()
+                        # Current state gets updated to be the previous state
+                        LeftFrame.CurrState = self.prevState.args
+                    else:
+                        LeftFrame.CurrState = ["Standby"]
 
                 # If the current state is same as the state previous to the one pressed
                 # This is the main form of state transition
-                if LeftFrame.CurrState[0] == self.prevState.stateName:
+                elif LeftFrame.CurrState[0] == self.prevState.stateName or LeftFrame.CurrState[0] == "Standby":
                     # State pressed gets enabled/green and previous state gets de-enabled/red
                     self.Button = tk.Button(self.parent, text=self.args[0], command=lambda: self.state_actuation,
                                             font=("Verdana", 10), fg='green', bg='black')
-                    self.Button.place(relx=0, rely=((1 / 9) * (self.args[1] - 1)) - 1 / 18, relwidth=1,
-                                      relheight=1 / 9)
+                    self.Button.place(relx=0, rely=((1 / 8) * (self.args[1] - 1)) - 1 / 18, relwidth=1,
+                                      relheight=1 / 8)
                     self.prevState.Button = tk.Button(self.parent, text=self.prevState.args[0],
                                                       command=lambda: self.prevState.state_actuation,
                                                       font=("Verdana", 10), fg='red', bg='black')
-                    self.prevState.Button.place(relx=0, rely=((1 / 9) * (self.prevState.args[1] - 1)) - 1 / 18,
-                                                relwidth=1, relheight=1 / 9)
+                    self.prevState.Button.place(relx=0, rely=((1 / 8) * (self.prevState.args[1] - 1)) - 1 / 18,
+                                                relwidth=1, relheight=1 / 8)
                     # Can Bus
                     msg = can.Message(arbitration_id=self.commandID, data=[self.commandON],
                                       is_extended_id=False)  # ////
@@ -427,22 +411,23 @@ class LeftFrame:
                     LeftFrame.TestState = True
                     self.Button = tk.Button(self.parent, text=self.args[0], command=lambda: self.state_actuation,
                                             font=("Verdana", 10), fg='green', bg='black')
-                    self.Button.place(relx=0, rely=((1 / 9) * (self.args[1] - 1)) - 1 / 18, relwidth=1, relheight=1 / 9)
+                    self.Button.place(relx=0, rely=((1 / 8) * (self.args[1] - 1)) - 1 / 18, relwidth=1, relheight=1 / 8)
                     msg = can.Message(arbitration_id=self.commandID, data=[self.commandON],
                                       is_extended_id=False)  # ////
                     bus.send(msg)  # //////////////////////////////////////////////////////////////////////////////////
                 #                     CanSend.Sendsomebullshit()
-
+                    LeftFrame.CurrState = self.args
                 else:
                     # Disable Test mode
                     LeftFrame.TestState = False
                     self.Button = tk.Button(self.parent, text=self.args[0], command=lambda: self.state_actuation,
                                             font=("Verdana", 10), fg='red', bg='black')
-                    self.Button.place(relx=0, rely=((1 / 9) * (self.args[1] - 1)) - 1 / 18, relwidth=1, relheight=1 / 9)
+                    self.Button.place(relx=0, rely=((1 / 8) * (self.args[1] - 1)) - 1 / 18, relwidth=1, relheight=1 / 8)
                     msg = can.Message(arbitration_id=self.commandID, data=[self.commandOFF],
                                       is_extended_id=False)  # ////
                     bus.send(msg)  # //////////////////////////////////////////////////////////////////////////////////
             #                     CanSend.Sendsomebullshit()
+                    LeftFrame.CurrState = ["Standby"]
 
             return 0
 

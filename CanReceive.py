@@ -1,7 +1,7 @@
 import can
-from bitarray import bitarray
-from bitstring import BitArray
+import bitstring
 from bitarray.util import ba2int
+from bitarray import bitarray
 
 
 class ValveDevice:  # Represents a valve logically
@@ -101,7 +101,7 @@ class CanReceive:
         while self.loop:
             msg_in = bus_receive.recv(timeout=None)
             data_list_hex = msg_in.data.hex()
-            data_bin = BitArray(hex=data_list_hex).bin
+            data_bin = bitstring.BitArray(hex=data_list_hex).bin
             msg_id = msg_in.arbitration_id
             value = int(data_list_hex[0:4], base=16)
             print(value)
@@ -119,7 +119,7 @@ class CanReceive:
 #             if datalist:
 #                 print(data)
 
-#             datalist = datalist[6:-2]
+#             ssdatalist = datalist[6:-2]
 #             data = ""
 
 #             for num in datalist:
