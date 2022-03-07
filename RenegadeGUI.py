@@ -368,11 +368,8 @@ class LeftFrame:
                                                     relwidth=1, relheight=1 / 8)
 
                         # Can Bus
-                        msg = can.Message(arbitration_id=self.commandID, data=[self.commandON],
-                                          is_extended_id=False)  # //////////////////////////////////////////////////////
-                        bus.send(msg)  # //////////////////////////////////////////////////////////////////////////////////
-                        #                     CanSend.Sendsomebullshit()
-                        # Current state gets updated to be the previous state
+                        msg = can.Message(arbitration_id=self.commandID, data=[self.commandON], is_extended_id=False)
+                        bus.send(msg)
                         LeftFrame.CurrState = self.prevState.args
                     else:
                         LeftFrame.CurrState = ["Standby"]
@@ -415,7 +412,7 @@ class LeftFrame:
                     msg = can.Message(arbitration_id=self.commandID, data=[self.commandON],
                                       is_extended_id=False)  # ////
                     bus.send(msg)  # //////////////////////////////////////////////////////////////////////////////////
-                #                     CanSend.Sendsomebullshit()
+                    #                     CanSend.Sendsomebullshit()
                     LeftFrame.CurrState = self.args
                 else:
                     # Disable Test mode
@@ -426,7 +423,7 @@ class LeftFrame:
                     msg = can.Message(arbitration_id=self.commandID, data=[self.commandOFF],
                                       is_extended_id=False)  # ////
                     bus.send(msg)  # //////////////////////////////////////////////////////////////////////////////////
-            #                     CanSend.Sendsomebullshit()
+                    #                     CanSend.Sendsomebullshit()
                     LeftFrame.CurrState = ["Standby"]
 
             return 0
@@ -440,10 +437,10 @@ class BottomFrame:
 
     # Data needed to set up the button for each State
     # [ State Name, X coordinate]
-    bottomButtons = [
-        ["Vent", 0, 1, 8, 9],
-        ["Abort", 3 / 4, 1, 6, 7]
-    ]
+    bottomButtons = (
+        ("Vent", 0, 1, 8, 9),
+        ("Abort", 3 / 4, 1, 6, 7)
+    )
 
     def __init__(self, parent, left_frame):
         # Makes the Vent and Abort Buttons
@@ -549,31 +546,31 @@ class CenterFrame:
         for valve in valves:
             self.valve_list.append(self.Valve(parent, valve))
 
-        sensors = [
-            ["COPV LOx", 0.06, 0.0125, 0.075, 0.00, 84],
-            ["COPV Fuel", 0.06, 0.055, 0.075, 0.00, 83],
-            ["Fuel Tank", 0.505, 0.575, 0.06, 0.04, 81],
-            ["Lox Tank", 0.505, 0.125, 0.06, 0.04, 82],
-            ["Lox\n Dome", 0.305, 0.05, 0.02, 0.08, 80],
-            ["Fuel\n Dome", 0.305, 0.7, 0.02, 0.08, 79],
-            ["MV\n Pneumatic", 0.875, 0.005, 0.05, 0.08, 78],
-            ["Fuel\n Prop Inlet", .65, 0.25, 0.025, 0.08, 57],
-            ["LOx\n Prop Inlet", .8125, 0.25, 0.025, 0.08, 59],
-            ["---: ", .55, 0.225, 0.03, 0.00, 0],
-            ["---: ", .55, 0.34, 0.03, 0.00, 0],
-            ["---: ", .55, 0.455, 0.03, 0.00, 0],
+        sensors = (
+            ("COPV LOx", 0.06, 0.0125, 0.075, 0.00, 84),
+            ("COPV Fuel", 0.06, 0.055, 0.075, 0.00, 83),
+            ("Fuel Tank", 0.505, 0.575, 0.06, 0.04, 81),
+            ("Lox Tank", 0.505, 0.125, 0.06, 0.04, 82),
+            ("Lox\n Dome", 0.305, 0.05, 0.02, 0.08, 80),
+            ("Fuel\n Dome", 0.305, 0.7, 0.02, 0.08, 79),
+            ("MV\n Pneumatic", 0.875, 0.005, 0.05, 0.08, 78),
+            ("Fuel\n Prop Inlet", .65, 0.25, 0.025, 0.08, 57),
+            ("LOx\n Prop Inlet", .8125, 0.25, 0.025, 0.08, 59),
+            ("---: ", .55, 0.225, 0.03, 0.00, 0),
+            ("---: ", .55, 0.34, 0.03, 0.00, 0),
+            ("---: ", .55, 0.455, 0.03, 0.00, 0),
             # Engine Sensors
-            ["Fuel Inlet", .86, .38, 0.05, 0.04, 10],
-            ["Fuel Injector", .86, .46, 0.05, 0.04, 58],
-            ["LOX Injector", .86, .54, 0.05, 0.04, 12],
-            ["Pc Chamber 1", .86, .62, 0.05, 0.04, 56],
-            ["Pc Chamber 2", .86, .70, 0.05, 0.04, 55],
-            ["Pc Chamber 3", .86, .78, 0.05, 0.04, 15],
-            ["Temp\n ChamberExt", .86, .86, 0.05, 0.08, 16],
-            ["LC1: ", .725, .86, 0.065, 0, 17],
-            ["LC2: ", .725, .90, 0.065, 0, 18],
-            ["LC3: ", .725, .94, 0.065, 0, 19]
-        ]
+            ("Fuel Inlet", .86, .38, 0.05, 0.04, 10),
+            ("Fuel Injector", .86, .46, 0.05, 0.04, 58),
+            ("LOX Injector", .86, .54, 0.05, 0.04, 12),
+            ("Pc Chamber 1", .86, .62, 0.05, 0.04, 56),
+            ("Pc Chamber 2", .86, .70, 0.05, 0.04, 55),
+            ("Pc Chamber 3", .86, .78, 0.05, 0.04, 15),
+            ("Temp\n ChamberExt", .86, .86, 0.05, 0.08, 16),
+            ("LC1: ", .725, .86, 0.065, 0, 17),
+            ("LC2: ", .725, .90, 0.065, 0, 18),
+            ("LC3: ", .725, .94, 0.065, 0, 19)
+        )
 
         # stores each sensor in the list
         self.sensorList = []
