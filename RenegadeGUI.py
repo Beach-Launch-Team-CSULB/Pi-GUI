@@ -4,6 +4,7 @@ import tkinter as tk
 from threading import Thread
 import time
 import tkinter.font as tk_font  # for font size
+from os.path import exists
 # import subprocess
 # from matplotlib import pyplot as plt
 # from matplotlib.figure import Figure
@@ -271,7 +272,7 @@ class LeftFrame:
     # Data needed to set up the button for each State
     # [ State Name, State ID , commandID, commandOFF , commandON, IfItsAnArmState]
     States = (
-        ("Test", 2, 1, 4, 5, False),
+        ("Test", 2, 1, 3, 5, False),
         ("Hi-Press\nPress Arm", 3, 1, 10, 11, True),
         ("Hi-Press\nPressurize", 4, 1, 12, 13, False),
         ("Tank Press \nArm", 5, 1, 14, 15, True),
@@ -438,8 +439,8 @@ class BottomFrame:
     # Data needed to set up the button for each State
     # [ State Name, X coordinate]
     bottomButtons = (
-        ("Vent", 0, 1, 8, 9),
-        ("Abort", 3 / 4, 1, 6, 7)
+        ("Vent", 0, 1, 3, 9),
+        ("Abort", 3 / 4, 1, 3, 7)
     )
 
     def __init__(self, parent, left_frame):
@@ -625,10 +626,11 @@ class CenterFrame:
         def __init__(self, parent, args):
             # Makes button that can be used by user to actuate valve
             self.name = args[0]
+            self.path = "ValveButtons/"
             self.photo_name = args[0]
             self.x_pos = args[1]
             self.y_pos = args[2]
-            self.photo = tk.PhotoImage(file="GUI Images/" + self.photo_name + "Button.png").subsample(5)
+            self.photo = tk.PhotoImage(file=self.path + self.photo_name + "-Stale-EnableStale.png")
             self.Button = tk.Button(parent, image=self.photo, command=lambda: self.two_factor_authentication(),
                                     font=("Verdana", 10), fg='red', bg='black')
             self.Button.place(relx=self.x_pos, rely=self.y_pos)
@@ -648,12 +650,18 @@ class CenterFrame:
 
         def refresh_valve(self):
             if self.name in can_receive.node_state and self.status is not can_receive.node_state[self.name]:
-                if can_receive.node_state[self.name] == 0:
-                    self.photo_name = "Disabled"
+                self.status = can_receive.node_state[self.name]
+                if self.status == 0:  # Closed
+                    self.photo_name = self.path + self.name + "-Closed-EnableStale.png"
+                elif self.status == 1:  # Open
+                    self.photo_name = self.path + self.name + "-Open-EnableStale.png"
+                elif self.status == 2:
+                    self.photo_name = self.path + self.name + "-FireCommanded-EnableStale.png"
+                if not exists(self.photo_name):
+                    print(self.photo_name + " Does not exist")
                 else:
-                    self.photo_name = self.name
-                self.photo = tk.PhotoImage(file="GUI Images/" + self.photo_name + "Button.png").subsample(5)
-                self.Button.config(image=self.photo)
+                    self.photo = tk.PhotoImage(file=self.photo_name)
+                    self.Button.config(image=self.photo)
 
         # Two-Factor Authentication
         # Valve has to be pressed twice in the span of 1 second
@@ -778,7 +786,7 @@ class RightFrame:
 # f2 = Figure(figsize = (5,5), dpi = 55)
 # f3 = Figure(figsize = (5,5), dpi = 55)
 # 
-# a1 = f1.add_subplot(111)
+# a1 = f1.add_sub`plot(111)
 # a2 = f2.add_subplot(111)
 # a3 = f3.add_subplot(111)
 

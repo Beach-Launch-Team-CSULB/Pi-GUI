@@ -20,11 +20,13 @@ class ValveNodeState:  # Represents a valve node logically, parses data
     valve_enable = []  # List of 3 valve enable bools
     valves = []  # List of ValveDevice objects to represent the valve states of each node
 
-    node_state_arr = ("Debug Mode",
+    node_state_arr = ("Setup",
+                      "Debug Mode",
                       "Passivated State",
                       "Test State",
                       "Abort State",
                       "Vent State",
+                      "Manual Override",
                       "Hi-Press Press Arm State",
                       "Hi-Press Pressurize State",
                       "Tank Press Arm State",
@@ -41,18 +43,16 @@ class ValveNodeState:  # Represents a valve node logically, parses data
         if id_value is None and can_message is None:
             self.id = 0
             self.state = "Default State"
-            self.autosequence = False
         else:
-            state_num = ba2int(bitarray(can_message[0:4]))
-            if state_num > 7:
+            state_num = ba2int(bitarray(can_message[4:8]))
+            if state_num > len(self.node_state_arr):
                 self.state = str(state_num)
             else:
-                self.state = self.node_state_arr[ba2int(bitarray(can_message[0:4]))]
-            self.valve_enable = can_message[4:7]
-            self.autosequence = can_message[7]
+                self.state = self.node_state_arr[state_num]
+            self.valve_enable = can_message[0:4]
             for i in range(8, len(can_message), 8):
-                valve_id = ba2int(bitarray(can_message[i:i + 5]))
-                valve_state = ba2int(bitarray(can_message[i + 5:i + 8]))
+                valve_id = ba2int(bitarray(can_message[i + 3:i + 8]))
+                valve_state = ba2int(bitarray(can_message[i :i + 3]))
                 valve = ValveDevice(valve_id, valve_state)
                 self.valves.append(valve)
 

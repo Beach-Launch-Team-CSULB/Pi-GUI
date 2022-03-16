@@ -466,7 +466,7 @@ class Valves:
         self.commandOFF = args[5]
         self.commandON = args[6]
 
-        self.photo = PhotoImage(file="Valve Buttons/" + self.photo_name + "-Closed-EnableOn.png").subsample(2)
+        self.photo = PhotoImage(file="ValveButtons/" + self.photo_name + "-Closed-EnableOn.png").subsample(2)
         self.Button = Button(parent, image=self.photo, font=("Verdana", 10), fg='red', bg='black')
         self.Button.place(relx=self.x_pos, rely=self.y_pos)
         self.Button.bind('<Double-1>', self.valve_actuation)
@@ -476,13 +476,13 @@ class Valves:
         if StateButtons.CurrState != "Test":
             return 0
         if self.state:
-            self.photo = PhotoImage(file="Valve Buttons/" + self.photo_name + "-Closed-EnableOn.png").subsample(2)
+            self.photo = PhotoImage(file="ValveButtons/" + self.photo_name + "-Closed-EnableOn.png").subsample(2)
             self.Button = Button(self.parent, image=self.photo, fg='red', bg='black', bd=5)
             self.state = False
         ##            msg = can.Message(arbitration_id=self.commandID, data=[self.commandON], is_extended_id=False)
         ##            bus.send(msg)
         else:
-            self.photo = PhotoImage(file="Valve Buttons/" + self.photo_name + "-Open-EnableOn.png").subsample(2)
+            self.photo = PhotoImage(file="ValveButtons/" + self.photo_name + "-Open-EnableOn.png").subsample(2)
             self.Button = Button(self.parent, image=self.photo, fg='green', bg='black', bd=5)
             self.state = True
         ##            msg = can.Message(arbitration_id=self.commandID, data=[self.commandOFF], is_extended_id=False)
