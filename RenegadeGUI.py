@@ -19,7 +19,7 @@ from CanReceive import CanReceive
 
 # This code is initializing the bus variable with the channel and bustype.
 # noinspection PyTypeChecker
-bus = can.interface.Bus(channel='can1', bustype='socketcan')  # ///////////////
+bus = can.interface.Bus(channel='can0', bustype='socketcan')  # ///////////////
 
 
 # The style of graph matplotlib will be using
@@ -653,9 +653,7 @@ class CenterFrame:
                 else:
                     self.photo_name = self.name
                 self.photo = tk.PhotoImage(file="GUI Images/" + self.photo_name + "Button.png").subsample(5)
-                self.Button = tk.Button(self.parent, image=self.photo, command=lambda: self.two_factor_authentication(),
-                                        bg='black')
-                self.Button.place(relx=self.x_pos, rely=self.y_pos)
+                self.Button.config(image=self.photo)
 
         # Two-Factor Authentication
         # Valve has to be pressed twice in the span of 1 second
@@ -712,14 +710,16 @@ class TimeFrame:
     # Displays the current time on the GUI, still needs work
 
     def refresh_label(self):
-        time_label = tk.Label(self.time_frame, bg="gray", text=datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
-        time_label.place(relx=0.1, rely=0.1)
+        self.time_label.config(text=datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
         self.time_frame.after(1000, self.refresh_label)
 
     def __init__(self, parent):
         self.time_frame = tk.Frame(parent, bg="gray", bd=5)
         self.time_frame.place(relx=.815, rely=.008, relwidth=.185, relheight=0.05)
         self.time_frame.after(1000, self.refresh_label)
+        self.time_label = tk.Label(self.time_frame, bg="gray",
+                                   text=datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
+        self.time_label.place(relx=0.1, rely=0.1)
 
         # clockFrame = self.TelemetryNode(time_frame)
 
