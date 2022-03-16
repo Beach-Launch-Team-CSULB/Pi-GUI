@@ -20,11 +20,13 @@ class ValveNodeState:  # Represents a valve node logically, parses data
     valve_enable = []  # List of 3 valve enable bools
     valves = []  # List of ValveDevice objects to represent the valve states of each node
 
-    node_state_arr = ("Debug Mode",
+    node_state_arr = ("Setup",
+                      "Debug Mode",
                       "Passivated State",
                       "Test State",
                       "Abort State",
                       "Vent State",
+                      "Manual Override",
                       "Hi-Press Press Arm State",
                       "Hi-Press Pressurize State",
                       "Tank Press Arm State",
@@ -41,18 +43,16 @@ class ValveNodeState:  # Represents a valve node logically, parses data
         if id_value is None and can_message is None:
             self.id = 0
             self.state = "Default State"
-            self.autosequence = False
         else:
-            state_num = ba2int(bitarray(can_message[0:4]))
-            if state_num > 7:
+            state_num = ba2int(bitarray(can_message[4:8]))
+            if state_num > len(self.node_state_arr):
                 self.state = str(state_num)
             else:
-                self.state = self.node_state_arr[ba2int(bitarray(can_message[0:4]))]
-            self.valve_enable = can_message[4:7]
-            self.autosequence = can_message[7]
+                self.state = self.node_state_arr[state_num]
+            self.valve_enable = can_message[0:4]
             for i in range(8, len(can_message), 8):
-                valve_id = ba2int(bitarray(can_message[i:i + 5]))
-                valve_state = ba2int(bitarray(can_message[i + 5:i + 8]))
+                valve_id = ba2int(bitarray(can_message[i + 3:i + 8]))
+                valve_state = ba2int(bitarray(can_message[i :i + 3]))
                 valve = ValveDevice(valve_id, valve_state)
                 self.valves.append(valve)
 
@@ -61,6 +61,7 @@ class CanReceive:
     Sensors = [0] * 2048
     valve_state_arr = ((), (), ("HP", "HPV", "LMV", "FMV"),
                        ("LV", "LDR", "LDV", "FV", "FDR", "FDV"))
+    autosequence_state_arr = ("Standby", "RunCommanded", "Running", "Hold")
     node_name_arr = ("PadGroundNode", "UpperPropNode")
     #             ["COPV 1", 1, 0],
     #             ["COPV 2", 2, 0],
@@ -89,6 +90,7 @@ class CanReceive:
     prop_node_dict = {"id": "0", "state": "Default State"}
     upper_prop_node_dict = {"id": "0", "state": "Default State"}
     node_state = {}
+    autosequence = {"state": "0", "time": "0"}
 
     def __init__(self):
         self.loop = True
@@ -101,8 +103,11 @@ class CanReceive:
         while self.loop:
             msg_in = bus_receive.recv(timeout=None)
             data_list_hex = msg_in.data.hex()
+            if data_list_hex[0:4] == '':
+                continue
             data_bin = bitstring.BitArray(hex=data_list_hex).bin
             msg_id = msg_in.arbitration_id
+
             value = int(data_list_hex[0:4], base=16)
             print(value)
             CanReceive.Sensors[msg_id] = value
@@ -118,6 +123,16 @@ class CanReceive:
                         print(i.valve_id)
                         node_name = self.valve_state_arr[msg_id][i.valve_id - 1]
                     self.node_state[node_name] = i.valve_state
+            elif msg_id == 18:
+                print("Autosequence!")
+                state_byte = int(msg_in.data[0])
+                self.autosequence['state'] = str(state_byte)
+                if str(state_byte < len(self.autosequence_state_arr)):
+                    self.autosequence['state'] = self.autosequence_state_arr[state_byte]
+                self.autosequence['time'] = \
+                    str(float(int.from_bytes(msg_in.data[1:8], byteorder='little', signed=True)) / 1000000.0)
+            print(self.autosequence['state'])
+            print(self.autosequence['time'])
 #             if datalist:
 #                 print(data)
 
