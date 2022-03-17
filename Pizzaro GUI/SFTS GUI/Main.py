@@ -7,6 +7,8 @@ from PIL import Image, ImageTk
 
 import datetime
 
+from os.path import exists
+
 from random import *
 
 import can  # /////////////////////////////////////////////////////////////////////////
@@ -67,7 +69,7 @@ class NodeFrame:
             nodeState = Label(self.nodeFrame, text="State", bg="black", fg="white")
             nodeState.place(relx=2 / 3-.025, rely=2 / 3-.025, relwidth=(1 / 3), relheight=1 / 3)
             # Reset button
-            resetButton = Button(self.nodeFrame, text="Reset", command=lambda: Reset(), font=("Verdana", 10),
+            resetButton = Button(self.nodeFrame, text="Reset", command=lambda: self.Reset(), font=("Verdana", 10),
                                     fg='black', bg='white')
             resetButton.place(relx=3 / 4-.025, rely=.025, relwidth=1 / 4, relheight=1 / 3)
 
@@ -400,7 +402,7 @@ class PropulsionFrame:
 
         # Instantiates Every Valve
         for valve in PropulsionFrame.valves:
-            self.sensorList.append(Valves(self.propFrame, valve))
+            self.valve_list.append(Valves(self.propFrame, valve))
 
         self.photo = PhotoImage(file="GUI Images/ManualOverrideDisabledButton.png").subsample(2)
         self.Button = Button(self.parent, image=self.photo,fg='red', bg='black', bd = 5)
@@ -470,8 +472,8 @@ class Sensors:
     def RefreshLabel(self):
         #value = randint(1,100)
         if self.stateID == 0:
-                value = 0
-            else:
+            value = 0
+        else:
                 value = CanReceive.Sensors[self.stateID]
         self.ReadingLabel.config(text=value)  # Updates the label with the updated value
 
@@ -490,7 +492,7 @@ class Valves:
         self.commandOFF = args[5]
         self.commandON = args[6]
 
-        self.photo = PhotoImage(file="Valve Buttons/" + self.name + "-Closed-EnableOn.png")#.subsample(2)
+        self.photo = PhotoImage(file="ValveButtons/" + self.name + "-Closed-EnableOn.png")#.subsample(2)
         self.Button = Button(parent, image=self.photo, font=("Verdana", 10), fg='red', bg='black')
         self.Button.place(relx=self.x_pos, rely=self.y_pos)
         self.Button.bind('<Double-1>', self.ValveActuaction)
@@ -500,13 +502,13 @@ class Valves:
         if StateButtons.CurrState != "Test" and StateButtons.CurrState != "Override":
                 return 0
         if self.state:
-            self.photo = PhotoImage(file="Valve Buttons/" + self.name + "-Closed-EnableOn.png")#.subsample(2)
+            self.photo = PhotoImage(file="ValveButtons/" + self.name + "-Closed-EnableOn.png")#.subsample(2)
             self.Button = Button(self.parent, image=self.photo,fg='red', bg='black', bd = 5)
             self.state = False
             msg = can.Message(arbitration_id=self.commandID, data=[self.commandON], is_extended_id=False) 
             bus.send(msg)
         else:
-            self.photo = PhotoImage(file="Valve Buttons/" + self.name + "-Open-EnableOn.png")#.subsample(2)
+            self.photo = PhotoImage(file="ValveButtons/" + self.name + "-Open-EnableOn.png")#.subsample(2)
             self.Button = Button(self.parent, image=self.photo,fg='green', bg='black', bd = 5)
             self.state = True
             msg = can.Message(arbitration_id=self.commandID, data=[self.commandOFF], is_extended_id=False)  
@@ -516,14 +518,14 @@ class Valves:
         self.Button.bind('<Double-1>', self.ValveActuaction)
 
     def refresh_valve(self):
-        if self.name in can_receive.node_state and self.status is not can_receive.node_state[self.name]:
-            self.status = can_receive.node_state[self.name]
+        if self.name in CanReceive.node_state and self.status is not CanReceive.node_state[self.name]:
+            self.status = CanReceive.node_state[self.name]
             if self.status == 0:  # Closed
-                self.photo_name = "Valve Buttons/" + self.name + "-Closed-EnableStale.png"
+                self.photo_name = "ValveButtons/" + self.name + "-Closed-EnableStale.png"
             elif self.status == 1:  # Open
-                self.photo_name = "Valve Buttons/" + self.name + "-Open-EnableStale.png"
+                self.photo_name = "ValveButtons/" + self.name + "-Open-EnableStale.png"
             elif self.status == 2:
-                self.photo_name = "Valve Buttons/" + self.name + "-FireCommanded-EnableStale.png"
+                self.photo_name = "ValveButtons/" + self.name + "-FireCommanded-EnableStale.png"
             if not exists(self.photo_name):
                 print(self.photo_name + " Does not exist")
             else:

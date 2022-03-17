@@ -34,9 +34,6 @@ class ValveNodeState:  # Represents a valve node logically, parses data
                       "Fire Arm State",
                       "Fire State")
 
-    valve_state_arr = ((), (), ("HP", "HPV", "LMV", "FMV"),
-                       ("LV", "LDR", "LDV", "FV", "FDR", "FDV"))
-
     def __init__(self, id_value=None, can_message=None):
         self.id = id_value
         # state = int(can_message[0][0], 16)
@@ -52,7 +49,7 @@ class ValveNodeState:  # Represents a valve node logically, parses data
             self.valve_enable = can_message[0:4]
             for i in range(8, len(can_message), 8):
                 valve_id = ba2int(bitarray(can_message[i + 3:i + 8]))
-                valve_state = ba2int(bitarray(can_message[i :i + 3]))
+                valve_state = ba2int(bitarray(can_message[i:i + 3]))
                 valve = ValveDevice(valve_id, valve_state)
                 self.valves.append(valve)
 
@@ -116,13 +113,8 @@ class CanReceive:
                 self.node_dict_list[self.node_name_arr[msg_id-2]]["id"] = node_data.id
                 self.node_dict_list[self.node_name_arr[msg_id-2]]["state"] = node_data.state
                 for i in node_data.valves:
-                    if i.valve_id > len(self.valve_state_arr[msg_id]):
-                        node_name = int(str(msg_id) + str(i.valve_id))
-                    else:
-                        print(msg_id)
-                        print(i.valve_id)
-                        node_name = self.valve_state_arr[msg_id][i.valve_id - 1]
-                    self.node_state[node_name] = i.valve_state
+                    self.node_state[i.valve_id] = i.valve_state
+                print()
             elif msg_id == 18:
                 print("Autosequence!")
                 state_byte = int(msg_in.data[0])

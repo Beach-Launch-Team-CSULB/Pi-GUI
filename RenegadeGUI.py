@@ -630,6 +630,7 @@ class CenterFrame:
             self.photo_name = args[0]
             self.x_pos = args[1]
             self.y_pos = args[2]
+            self.id = args[3]
             self.photo = tk.PhotoImage(file=self.path + self.photo_name + "-Stale-EnableStale.png")
             self.Button = tk.Button(parent, image=self.photo, command=lambda: self.two_factor_authentication(),
                                     font=("Verdana", 10), fg='red', bg='black')
@@ -649,8 +650,8 @@ class CenterFrame:
             self.time2 = 0
 
         def refresh_valve(self):
-            if self.name in can_receive.node_state and self.status is not can_receive.node_state[self.name]:
-                self.status = can_receive.node_state[self.name]
+            if self.id in can_receive.node_state and self.status is not can_receive.node_state[self.id]:
+                self.status = can_receive.node_state[self.id]
                 if self.status == 0:  # Closed
                     self.photo_name = self.path + self.name + "-Closed-EnableStale.png"
                 elif self.status == 1:  # Open
