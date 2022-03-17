@@ -55,7 +55,7 @@ class ValveNodeState:  # Represents a valve node logically, parses data
 
 
 class CanReceive:
-    Sensors = [0] * 2048
+    Sensors = {}
     valve_state_arr = ((), (), ("HP", "HPV", "LMV", "FMV"),
                        ("LV", "LDR", "LDV", "FV", "FDR", "FDV"))
     autosequence_state_arr = ("Standby", "RunCommanded", "Running", "Hold")

@@ -192,16 +192,16 @@ class TopFrame:
             upper_prop_system_frame = tk.Frame(parent, bg="grey", bd=5)
             upper_prop_system_frame.place(relx=(1 / 3 + 0.0015), rely=0, relwidth=(1 / 3.1), relheight=1)
 
-            upper_prop_system_labels = []
+            self.upper_prop_system_labels = []
             for i in range(4):
                 label = tk.Label(upper_prop_system_frame, text="", bg="grey", anchor="w")
-                upper_prop_system_labels.append(label)
+                self.upper_prop_system_labels.append(label)
                 label.place(relx=0, rely=(1 / 4) * i, relwidth=2 / 3, relheight=1 / 4)
 
-            upper_prop_system_labels[0]["text"] = "Upper Prop System Node"
-            upper_prop_system_labels[1]["text"] = "Activity: "
-            upper_prop_system_labels[2]["text"] = "MCU Temp: "
-            upper_prop_system_labels[3]["text"] = "Bus Info"
+            self.upper_prop_system_labels[0]["text"] = "Upper Prop System Node"
+            self.upper_prop_system_labels[1]["text"] = "Activity: "
+            self.upper_prop_system_labels[2]["text"] = "MCU Temp: "
+            self.upper_prop_system_labels[3]["text"] = "Bus Info"
 
             node_state = tk.Label(upper_prop_system_frame, text="Hi", bg="black",
                                   fg="white")
@@ -212,10 +212,10 @@ class TopFrame:
                                      font=("Verdana", 10),
                                      fg='black', bg='white')
             reset_button.place(relx=3 / 4, rely=0, relwidth=1 / 4, relheight=1 / 3)
-            self.refresh_label()
 
         def refresh_label(self):
             self.NodeStateContainer[0].config(text=str(can_receive.node_dict_list["UpperPropNode"]["state"]))
+            self.upper_prop_system_labels[2].config(text=str("MCU Temp: " + CanReceive.Sensors[300]))
 
     class PadGroundNode:
         NodeStateContainer = []
@@ -223,16 +223,16 @@ class TopFrame:
         def __init__(self, parent):
             pad_ground_frame = tk.Frame(parent, bg="grey", bd=5)
             pad_ground_frame.place(relx=(2 / 3 + 0.0015), rely=0, relwidth=(1 / 3.1), relheight=1)
-            pad_ground_labels = []
+            self.pad_ground_labels = []
             for i in range(4):
                 label = tk.Label(pad_ground_frame, text="", bg="grey", anchor="w")
-                pad_ground_labels.append(label)
+                self.pad_ground_labels.append(label)
                 label.place(relx=0, rely=(1 / 4) * i, relwidth=2 / 3, relheight=1 / 4)
 
-            pad_ground_labels[0]["text"] = "Pad Ground Node"
-            pad_ground_labels[1]["text"] = "Activity: "
-            pad_ground_labels[2]["text"] = "MCU Temp: "
-            pad_ground_labels[3]["text"] = "Bus Info"
+            self.pad_ground_labels[0]["text"] = "Pad Ground Node"
+            self.pad_ground_labels[1]["text"] = "Activity: "
+            self.pad_ground_labels[2]["text"] = "MCU Temp: "
+            self.pad_ground_labels[3]["text"] = "Bus Info"
 
             node_state = tk.Label(pad_ground_frame, text="Default State", bg="black", fg="white")
             self.NodeStateContainer.append(node_state)
@@ -244,6 +244,7 @@ class TopFrame:
 
         def refresh_label(self):
             self.NodeStateContainer[0].config(text=str(can_receive.node_dict_list["PadGroundNode"]["state"]))
+            self.pad_ground_labels[2].config(text=str("MCU Temp: " + CanReceive.Sensors[200]))
 
 
 # Left Frame --------------------------------------------------------------------------------------------
