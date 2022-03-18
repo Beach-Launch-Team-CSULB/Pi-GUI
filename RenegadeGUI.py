@@ -215,7 +215,7 @@ class TopFrame:
 
         def refresh_label(self):
             self.NodeStateContainer[0].config(text=str(can_receive.node_dict_list["UpperPropNode"]["state"]))
-            self.upper_prop_system_labels[2].config(text=str("MCU Temp: " + CanReceive.Sensors[300]))
+            self.upper_prop_system_labels[2].config(text="MCU Temp: " + str(CanReceive.Sensors[300]))
 
     class PadGroundNode:
         NodeStateContainer = []
@@ -244,7 +244,7 @@ class TopFrame:
 
         def refresh_label(self):
             self.NodeStateContainer[0].config(text=str(can_receive.node_dict_list["PadGroundNode"]["state"]))
-            self.pad_ground_labels[2].config(text=str("MCU Temp: " + CanReceive.Sensors[200]))
+            self.pad_ground_labels[2].config(text="MCU Temp: " + str(CanReceive.Sensors[200]))
 
 
 # Left Frame --------------------------------------------------------------------------------------------
