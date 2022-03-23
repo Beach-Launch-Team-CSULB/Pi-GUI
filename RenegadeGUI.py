@@ -537,7 +537,7 @@ class CenterFrame:
             ('LDV', .225, .025, 20, 3, 40, 41),
             ('FV', .375, .8, 21, 3, 42, 43),
             ('FDR', .15, .65, 22, 3, 44, 45),
-            ('FDV', .225, .8, 17, 23, 3, 46, 47),
+            ('FDV', .225, .8, 23, 23, 3, 46, 47),
             ('LMV', .815, 0.15, 24, 2, 48, 49),
             ('FMV', .665, .15, 25, 2, 50, 51),
         )
@@ -651,6 +651,7 @@ class CenterFrame:
             self.time2 = 0
 
         def refresh_valve(self):
+            print(can_receive.node_state)
             if self.id in can_receive.node_state and self.status is not can_receive.node_state[self.id]:
                 self.status = can_receive.node_state[self.id]
                 if self.status == 0:  # Closed
@@ -692,20 +693,22 @@ class CenterFrame:
             # If valve is Off turn On
             if not self.status:
                 self.status = True
-                self.Button = tk.Button(self.parent, text=self.args[0],
-                                        command=lambda: self.two_factor_authentication(), font=("Verdana", 10),
-                                        fg='green', bg='black')
-                self.Button.place(relx=self.args[1], rely=self.args[2])
+                print('hi')
+#                 self.Button = tk.Button(self.parent, text=self.args[0],
+#                                         command=lambda: self.two_factor_authentication(), font=("Verdana", 10),
+#                                         fg='green', bg='black')
+#                 self.Button.place(relx=self.args[1], rely=self.args[2])
                 msg = can.Message(arbitration_id=self.commandID, data=[self.commandON], is_extended_id=False)  # /////
                 bus.send(msg)  # ///////////////////////////////////////////////////////////////////////////////////
             #                 CanSend.Sendsomebullshit()
 
             else:  # Vice versa
+                print('hi1')
                 self.status = False
-                self.Button = tk.Button(self.parent, text=self.args[0],
-                                        command=lambda: self.two_factor_authentication(), font=("Verdana", 10),
-                                        fg='red', bg='black')
-                self.Button.place(relx=self.args[1], rely=self.args[2])
+#                 self.Button = tk.Button(self.parent, text=self.args[0],
+#                                         command=lambda: self.two_factor_authentication(), font=("Verdana", 10),
+#                                         fg='red', bg='black')
+#                 self.Button.place(relx=self.args[1], rely=self.args[2])
                 msg = can.Message(arbitration_id=self.commandID, data=[self.commandOFF], is_extended_id=False)  # /////
                 bus.send(msg)  # ///////////////////////////////////////////////////////////////////////////////////
             #                 CanSend.Sendsomebullshit()

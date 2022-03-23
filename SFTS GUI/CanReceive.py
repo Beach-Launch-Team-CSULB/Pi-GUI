@@ -94,7 +94,7 @@ class CanReceive:
 
     def run(self):
         bus_type = 'socketcan'
-        channel0 = 'can0'
+        channel0 = 'can1'
         # noinspection PyTypeChecker
         bus_receive = can.interface.Bus(channel=channel0, bustype=bus_type)
         while self.loop:
