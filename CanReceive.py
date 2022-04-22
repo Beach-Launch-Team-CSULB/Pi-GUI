@@ -14,7 +14,7 @@ class ValveDevice:  # Represents a valve logically
 
 
 class ValveNodeState:  # Represents a valve node logically, parses data
-    id: int = 0  # ID of the node
+    id: int = 0  # ID of the nodeHV Does not exist
     state = "Default State"  # String to represent current state node is in, looked up from node_state_arr
     autosequence: bool = False  # Autosequence bool
     valve_enable = []  # List of 3 valve enable bools
@@ -60,6 +60,7 @@ class CanReceive:
                        ("LV", "LDR", "LDV", "FV", "FDR", "FDV"))
     autosequence_state_arr = ("Standby", "RunCommanded", "Running", "Hold")
     node_name_arr = ("PadGroundNode", "UpperPropNode")
+    timestamp = 0
     #             ["COPV 1", 1, 0],
     #             ["COPV 2", 2, 0],
     #             ["Fuel Tank", 3, 0],
@@ -94,19 +95,22 @@ class CanReceive:
 
     def run(self):
         bus_type = 'socketcan'
-        channel0 = 'can0'
+        channel0 = 'can1'
         # noinspection PyTypeChecker
         bus_receive = can.interface.Bus(channel=channel0, bustype=bus_type)
         while self.loop:
             msg_in = bus_receive.recv(timeout=None)
             data_list_hex = msg_in.data.hex()
+            bin_id = bitstring.BitArray(hex(msg_in.arbitration_id)).bin
+            orig_id = ba2int(bitarray(bin_id[-11:]))
+            extended_id = ba2int(bitarray(bin_id[0:11]))
+            self.timestamp = extended_id
             if data_list_hex[0:4] == '':
                 continue
             data_bin = bitstring.BitArray(hex=data_list_hex).bin
-            msg_id = msg_in.arbitration_id
-
+            msg_id = orig_id
             value = int(data_list_hex[0:4], base=16)
-            #print(value)
+            # print(msg_in)
             CanReceive.Sensors[msg_id] = value
             if msg_id == 2 or msg_id == 3:  # Prop Node state report logic
                 node_data = ValveNodeState(msg_id, data_bin)
@@ -114,9 +118,9 @@ class CanReceive:
                 self.node_dict_list[self.node_name_arr[msg_id-2]]["state"] = node_data.state
                 for i in node_data.valves:
                     self.node_state[i.valve_id] = i.valve_state
-                #print()
+                # print()
             elif msg_id == 18:
-                #print("Autosequence!")
+                # print("Autosequence!")
                 state_byte = int(msg_in.data[0])
                 self.autosequence['state'] = str(state_byte)
                 if str(state_byte < len(self.autosequence_state_arr)):
