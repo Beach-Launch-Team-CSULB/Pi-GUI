@@ -2,6 +2,7 @@ import can
 import bitstring
 from bitarray.util import ba2int
 from bitarray import bitarray
+import time
 
 
 class ValveDevice:  # Represents a valve logically
@@ -55,12 +56,17 @@ class ValveNodeState:  # Represents a valve node logically, parses data
 
 
 class CanReceive:
+    startTime = 0
+    currRefTime = startTime
+    firstNodeTime = 0
     Sensors = [0] * 2048
+    sensorTimestamps = [0] * 2048
     valve_state_arr = ((), (), ("HP", "HPV", "LMV", "FMV"),
                        ("LV", "LDR", "LDV", "FV", "FDR", "FDV"))
     autosequence_state_arr = ("Standby", "RunCommanded", "Running", "Hold")
     node_name_arr = ("PadGroundNode", "UpperPropNode")
-    timestamp = 0
+    seconds_timer = 0
+    millis_timer = 0
     #             ["COPV 1", 1, 0],
     #             ["COPV 2", 2, 0],
     #             ["Fuel Tank", 3, 0],
@@ -83,7 +89,7 @@ class CanReceive:
     #             ["LC3: ", 19, 0]
     #
     # Binary String of bools that hold the current position of the valves
-    node_dict_list = {node_name_arr[0]:  {"id": "0", "state": "Default State"},
+    node_dict_list = {node_name_arr[0]: {"id": "0", "state": "Default State"},
                       node_name_arr[1]: {"id": "0", "state": "Default State"}}
     prop_node_dict = {"id": "0", "state": "Default State"}
     upper_prop_node_dict = {"id": "0", "state": "Default State"}
@@ -95,27 +101,39 @@ class CanReceive:
 
     def run(self):
         bus_type = 'socketcan'
-        channel0 = 'can1'
+        channel0 = 'can0'
         # noinspection PyTypeChecker
         bus_receive = can.interface.Bus(channel=channel0, bustype=bus_type)
         while self.loop:
             msg_in = bus_receive.recv(timeout=None)
+            # msg_in_1 = bus_receive_1.recv(timeout=None)
+            # print(msg_in_1)
+            if CanReceive.startTime == 0:
+                CanReceive.startTime = time.time()
+                # CanReceive.firstNodeTime = 9
+            # currRefTime = time.time()-CanReceive.startTime + CanReceive.firstNodeTime
             data_list_hex = msg_in.data.hex()
-            bin_id = bitstring.BitArray(hex(msg_in.arbitration_id)).bin
-            orig_id = ba2int(bitarray(bin_id[-11:]))
-            extended_id = ba2int(bitarray(bin_id[0:11]))
-            self.timestamp = extended_id
+            # data_list_hex_1 = msg_in_1.data.hex()
             if data_list_hex[0:4] == '':
                 continue
             data_bin = bitstring.BitArray(hex=data_list_hex).bin
-            msg_id = orig_id
-            value = int(data_list_hex[0:4], base=16)
-            # print(msg_in)
-            CanReceive.Sensors[msg_id] = value
+            msg_id = int(msg_in.arbitration_id)
+            #             data_bin_1 = bitstring.BitArray(hex=data_list_hex_1).bin
+            #             msg_id_1 = extended_id_1
+            #             print(msg_id_1, bin_id_1[0:11])
+            seconds = 0
+            millis = 0
+            if len(data_list_hex) >= 4:
+                CanReceive.Sensors[msg_id] = int(data_list_hex[0:2], base=16) + int(data_list_hex[2:4], base=16)
+            if len(msg_in.data) >= 2:
+                seconds = msg_in.data[2]
+            if len(data_list_hex) >= 9:
+                millis = int(data_list_hex[6:8], base=16) + int(data_list_hex[8:10], base=16)
+            CanReceive.sensorTimestamps[msg_id] = seconds + (millis * 0.001)
             if msg_id == 2 or msg_id == 3:  # Prop Node state report logic
                 node_data = ValveNodeState(msg_id, data_bin)
-                self.node_dict_list[self.node_name_arr[msg_id-2]]["id"] = node_data.id
-                self.node_dict_list[self.node_name_arr[msg_id-2]]["state"] = node_data.state
+                self.node_dict_list[self.node_name_arr[msg_id - 2]]["id"] = node_data.id
+                self.node_dict_list[self.node_name_arr[msg_id - 2]]["state"] = node_data.state
                 for i in node_data.valves:
                     self.node_state[i.valve_id] = i.valve_state
                 # print()
@@ -127,8 +145,8 @@ class CanReceive:
                     self.autosequence['state'] = self.autosequence_state_arr[state_byte]
                 self.autosequence['time'] = \
                     str(float(int.from_bytes(msg_in.data[1:8], byteorder='little', signed=True)) / 1000000.0)
-            #print(self.autosequence['state'])
-            #print(self.autosequence['time'])
+            # print(self.autosequence['state'])
+            # print(self.autosequence['time'])
 #             if datalist:
 #                 print(data)
 

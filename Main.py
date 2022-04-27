@@ -17,7 +17,15 @@ from CanReceive import CanReceive
 # noinspection PyTypeChecker
 bus = can.interface.Bus(channel='can0', bustype='socketcan')  # ///////////////
 
+DANGERZONE = 300
 
+yellow = "yellow3"
+blue = "dodgerblue"
+red = "red"
+green = "green"
+purple = "purple4"
+darkgrey = "grey3"
+orange = 'orange'
 # Top most Frame holds all the Nodes and there status's
 class NodeFrame:
     # Number of Nodes that will be displayed. Used to size the each individual frame
@@ -29,22 +37,22 @@ class NodeFrame:
         self.nodeFrame.place(relx=0.405, rely=0, relwidth=.81, relheight=0.2, anchor="n")
 
         # Instantiates the Individual Nodes
-        self.telemetryFrame = self.Node(self.nodeFrame)
+        self.telemetryFrame = self.Node(self.nodeFrame,commandRESET=244, name = "PasafireNode",  canID=700)
         # Array with the labels
-        self.telemetryFrame.labelarray = ["Telemetry Node", "Activity: ", "Temp: ", "Bus Info"]
+        self.telemetryFrame.labelarray = ["Pasafire Node", "Activity: ", "Temp: ", "Bus Info"]
         # Adds in the labels into the frame
         self.telemetryFrame.makeNodeLabels()
 
-        self.upperPropSystemFrame = self.Node(self.nodeFrame, "UpperPropNode")
+        self.upperPropSystemFrame = self.Node(self.nodeFrame, commandRESET = 240, name = "UpperPropNode", canID=300)
         self.upperPropSystemFrame.labelarray = ["Upper Prop System Node", "Activity: ", "Temp: ", "Bus Info"]
         self.upperPropSystemFrame.makeNodeLabels()
 
-        self.engineFrame = self.Node(self.nodeFrame, "PadGroundNode")
+        self.engineFrame = self.Node(self.nodeFrame, commandRESET = 239, name = "PadGroundNode", canID=200)
         self.engineFrame.labelarray = ["Engine Node", "Activity: ", "MCU Temp: ", "Bus Info"]
         self.engineFrame.makeNodeLabels()
 
         globalResetButton = Button(self.nodeFrame, text="Reset", command=lambda: self.Reset(), font=("Verdana", 10),
-                                   fg='black', bg='orange')
+                                   fg='black', bg='orange', bd=5)
         globalResetButton.place(
             relx=(1 / (NodeFrame.numberOfSubframes + 1 / 2) + 0.0015) * (NodeFrame.numberOfSubframes), rely=1 / 4,
             relwidth=1 - (1 / (NodeFrame.numberOfSubframes + 1 / 2) + 0.0015) * (NodeFrame.numberOfSubframes),
@@ -60,51 +68,57 @@ class NodeFrame:
         # Keeps track of number of instantiated Nodes. Used for Frame placement
         numberOfNodes = 0
 
-        def __init__(self, parent, name=None):
+        def __init__(self, parent, commandRESET = None,  name=None, canID=None):
             # Makes
             self.nodeLabels = []
-            self.nodeFrame = Canvas(parent, bg="grey", highlightbackground="black", bd=5)
+            self.nodeFrame = Canvas(parent, bg=darkgrey, highlightbackground=orange)
             self.nodeFrame.place(
                 relx=(1 / (NodeFrame.numberOfSubframes + 1 / 2) + 0.0015) * NodeFrame.Node.numberOfNodes, rely=0,
                 relwidth=(1 / (NodeFrame.numberOfSubframes + 1 / 2)), relheight=1)
             self.name = name
+            self.commandRESET = commandRESET
             # Updates the amount of instantiated nodes
             NodeFrame.Node.numberOfNodes += 1
             # Holds the labels/text that will be put in the frame
             self.labelarray = []
-
+            self.canID = canID
             # Shows the current state of the node
-            self.nodeState = Label(self.nodeFrame, text="State", bg="black", fg="white")
+            self.nodeState = Label(self.nodeFrame, text="State", bg="grey20", fg=orange)
             self.nodeState.place(relx=2 / 3 - .025, rely=2 / 3 - .025, relwidth=(1 / 3), relheight=1 / 3)
             # Reset button
-            resetButton = Button(self.nodeFrame, text="Reset", command=lambda: self.Reset(), font=("Verdana", 10),
-                                 fg='black', bg='white')
-            resetButton.place(relx=3 / 4 - .025, rely=.025, relwidth=1 / 4, relheight=1 / 3)
+#             resetButton = Button(self.nodeFrame, text="Reset", command=lambda: self.Reset(), font=("Verdana", 10),
+#                                  fg='black', bg='white')
+#             resetButton.place(relx=3 / 4 - .025, rely=.025, relwidth=1 / 4, relheight=1 / 3)
             canResetButton = Button(self.nodeFrame, text="Can Reset", command=lambda: self.Reset(),
                                     font=("Verdana", 10),
-                                    fg='black', bg='white')
-            canResetButton.place(relx=2 / 4 - .025, rely=.025, relwidth=1 / 4, relheight=1 / 3)
+                                    fg=orange, bg=darkgrey, bd=5)
+            canResetButton.place(relx=3 / 4 - .025, rely=.025, relwidth=1 / 4, relheight=1 / 3)
 
         def refresh_label(self):
             self.nodeState.config(text=str(can_receive.node_dict_list[self.name]["state"]))
-            self.nodeLabels[2].config(text="MCU Temp: " + str(CanReceive.Sensors[300]))
+            self.nodeLabels[2].config(text="MCU Temp: " + str(CanReceive.Sensors[self.canID]))
 
         # Still needs work to be done
         def Reset(self):
-            pass
+            msg = can.Message(arbitration_id=self.commandID, data=[self.commandRESET], is_extended_id=False)  # ////
+            bus.send(msg)  # //////////////////////////////////////////////////////////////////////////////////////
+
+            
 
         # Makes the labels for the node and adds it to the frame
         def makeNodeLabels(self):
             numberOfLabels = len(self.labelarray)
             for i in range(numberOfLabels):
-                node_label = Label(self.nodeFrame, text=self.labelarray[i], bg="grey", anchor="w")
+                node_label = Label(self.nodeFrame, text=self.labelarray[i], bg=darkgrey, anchor="w", fg=orange)
                 node_label.place(relx=0.01, rely=(1 / numberOfLabels) * i + .01, relwidth=1 / 3,
                                  relheight=1 / (numberOfLabels + 1))
                 self.nodeLabels.append(node_label)
 
 
     def Reset(self):
-        pass
+        msg = can.Message(arbitration_id=self.commandID, data=[254], is_extended_id=False)  # ////
+        bus.send(msg)  # //////////////////////////////////////////////////////////////////////////////////////
+
 
 
 # Creates the Frame that the System States are going to be in
@@ -122,14 +136,14 @@ class StatesFrame:
     )
 
     def __init__(self, parent):
-        self.stateFrame = Canvas(parent, bg="grey", highlightbackground="black", bd=5)
+        self.stateFrame = Canvas(parent, bg=darkgrey, highlightbackground=orange, bd=5)
         self.stateFrame.place(relx=0.0001, rely=1 / 5, relwidth=.1, relheight=0.8)
 
         self.StateReset()
 
     def StateReset(self):
         # Creates label for Passive/Standby State
-        self.passiveState = Label(self.stateFrame, text="Passive", bg="grey", fg="Red")  # , font=fontSize)
+        self.passiveState = Label(self.stateFrame, text="Passive", bg=darkgrey, fg="Red")  # , font=fontSize)
         self.passiveState.place(relx=.1, rely=0.0125, relwidth=.8, relheight=1 / 30)
         StateButtons.CurrState = "Passive"
         # Store previosly instantiated State. Arm States may be able to access the state before it
@@ -185,13 +199,13 @@ class StateButtons:
     def VentAbortInstantiation(self):
         self.relxcor = self.args[1]
         self.relycor = 0
-        self.relheight = 1
+        self.relheight = .9
         self.relwitdth = 1 / 4
-        self.bgcolor = "grey"
+        self.bgcolor = darkgrey
         self.fontSize = ("Verdana", 26)
         self.isVentAbort = True
         self.button = Button(self.parent, text=self.args[0], command=lambda: self.StateActuaction(), fg='red',
-                        bg='grey')  # , font=self.fontSize)
+                        bg=darkgrey, font=self.fontSize, bd=5)  # , font=self.fontSize)
         self.button.place(relx=self.relxcor, rely=self.relycor, relheight=self.relheight, relwidth=self.relwitdth)
         
     # Holds the logic for the state commands and the transition between the states
@@ -203,12 +217,12 @@ class StateButtons:
     def Logic(self):
         if self.stateName == "Test":
             if StateButtons.CurrState == "Passive":
-                self.passiveState = Label(self.parent, text="Active", bg="grey", fg="Green")  # , font=fontSize)
+                self.passiveState = Label(self.parent, text="Active", bg=darkgrey, fg="Green")  # , font=fontSize)
                 self.passiveState.place(relx=.1, rely=0.0125, relwidth=.8, relheight=1 / 30)
                 StateButtons.CurrState = "Test"
                 self.StateActuaction()
             elif StateButtons.CurrState == "Test":
-                self.passiveState = Label(self.parent, text="Passive", bg="grey", fg="red")  # , font=fontSize)
+                self.passiveState = Label(self.parent, text="Passive", bg=darkgrey, fg="red")  # , font=fontSize)
                 self.passiveState.place(relx=.1, rely=0.0125, relwidth=.8, relheight=1 / 30)
                 StateButtons.CurrState = "Passive"
                 self.StateActuaction()
@@ -217,7 +231,7 @@ class StateButtons:
         elif StateButtons.CurrState != "Test":
             if self.prevState.stateName == StateButtons.CurrState or (
                     StateButtons.CurrState == "Passive" and self.prevState.stateName == "Test"):
-                self.passiveState = Label(self.parent, text="Active", bg="grey", fg="Green")  # , font=fontSize)
+                self.passiveState = Label(self.parent, text="Active", bg=darkgrey, fg="Green")  # , font=fontSize)
                 self.passiveState.place(relx=.1, rely=0.0125, relwidth=.8, relheight=1 / 30)
                 self.StateActuaction()
                 if self.prevState.stateName != "Test":
@@ -256,7 +270,7 @@ class GraphFrame:
     numberOfGraphsSubFrames = 3
 
     def __init__(self, parent):
-        graphFrame = Canvas(parent, bg="grey", highlightbackground="black")
+        graphFrame = Canvas(parent, bg=darkgrey, highlightbackground="black")
         graphFrame.place(relx=.815, rely=.07, relwidth=.1875, relheight=.95)
 
         # Instantiates the subframe where each individual graph will be held in
@@ -266,7 +280,7 @@ class GraphFrame:
 
     class Graph:
         def __init__(self, parent):
-            graph_frame = Frame(parent, bg="grey", bd=5)
+            graph_frame = Frame(parent, bg=darkgrey, bd=5)
             graph_frame.place(relx=0.15, rely=0.1, relwidth=.8, relheight=(1 / 3.1))
 
 
@@ -283,7 +297,7 @@ class VentAbortFrame:
         self.parent = parent
         # Makes the Frame
         ventAbortFrame = Canvas(parent, bg="black", highlightbackground="black")
-        ventAbortFrame.place(relx=0.14, rely=0.85, relwidth=0.65, relheight=0.2)
+        ventAbortFrame.place(relx=0.14, rely=0.85, relwidth=0.65, relheight=0.15)
 
         self.autoseqence = Label(ventAbortFrame, text="Boom Boom \n wont go boom boom", bg="black", fg="Green",
                                  font=("Verdana", 25))
@@ -310,9 +324,9 @@ class VentAbortFrame:
 
     def refresh_label(self):
         self.autosequence_str = "State: " + can_receive.autosequence['state'] + "\n" + \
-                                "Time Left: " + can_receive.autosequence['time'] + " s"
+                                "T  " + can_receive.autosequence['time'] + " s"
         self.autoseqence.config(text=self.autosequence_str)
-        self.autoseqence.after(1000, self.refresh_label)
+        self.autoseqence.after(100, self.refresh_label)
 
 
 class PropulsionFrame:
@@ -324,43 +338,44 @@ class PropulsionFrame:
     # [ Valve Name, relx ,rely , State ID , commandID, commandOFF , commandON]
     valves = (
         ('HP', 0, .65, 16, 1, 32, 33),
-        ('HV', .075, .825, 17, 1, 34, 35),
-        ('LV', .375, .025, 18, 1, 36, 37),
-        ('LDR', .15, .15, 19, 1, 38, 39),
-        ('LDV', .225, .025, 20, 1, 40, 41),
-        ('FV', .375, .8, 21, 1, 42, 43),
-        ('FDR', .15, .65, 22, 1, 44, 45),
-        ('FDV', .225, .8, 23, 1, 46, 47),
-        ('LMV', .815, 0.15, 24, 1, 48, 49),
-        ('FMV', .685, .15, 25, 1, 50, 51),
+        ('HV', 0.05, .825, 17, 1, 34, 35),
+        ('LV', .45, .01, 18, 1, 36, 37),
+        ('LDR', .165, .275, 19, 1, 38, 39),
+        ('LDV', .265, .275, 20, 1, 40, 41),
+        ('FV', .45, .85, 21, 1, 42, 43),
+        ('FDR', .165, .55, 22, 1, 44, 45),
+        ('FDV', .265, .55, 23, 1, 46, 47),
+        ('LMV', .565, 0.25, 24, 1, 48, 49),
+        ('FMV', .565, .6, 25, 1, 50, 51),
     )
 
     # Data needed to set up the button
-    # [ Sensor Name, relx ,rely , Reading Xcor Offest , Reading Xcor Offest,  Sensor ID]
+    # [ Sensor Name, relx ,rely , Reading Xcor Offest , Reading Ycor Offest,  Sensor ID]
     sensors = [
-        ["COPV LOx", 0.06, 0.0125, 0.075, 0.00, 84],
-        ["COPV Fuel", 0.06, 0.055, 0.075, 0.00, 83],
-        ["Fuel Tank", 0.505, 0.575, 0.06, 0.04, 81],
-        ["Lox Tank", 0.505, 0.125, 0.06, 0.04, 82],
-        ["Lox\n Dome", 0.305, 0.05, 0.02, 0.08, 80],
-        ["Fuel\n Dome", 0.305, 0.7, 0.02, 0.08, 79],
-        ["MV\n Pneumatic", 0.715, 0.005, 0.03, 0.08, 78],
-        ["Fuel\n Prop Inlet", .65, 0.25, 0.025, 0.08, 57],
-        ["LOx\n Prop Inlet", .8125, 0.25, 0.025, 0.08, 59],
-        ["---: ", .55, 0.225, 0.03, 0.00, 0],
-        ["---: ", .55, 0.34, 0.03, 0.00, 0],
-        ["---: ", .55, 0.455, 0.03, 0.00, 0],
+        ["COPV LOx", 0.06, 0.0225, 0.075, 0.00, 84, yellow],
+        ["COPV Fuel", 0.06, 0.065, 0.075, 0.00, 83, yellow],
+        ["Fuel\nTank", 0.315, 0.855, 0.01, 0.06, 81, red],
+        ["Fuel\nDome", 0.24, 0.855, 0.01, 0.06, 79, yellow],
+        ["Lox\nTank", 0.315, 0.025, 0.01, 0.06, 82, blue],
+        ["Lox\nDome", 0.24, 0.025, 0.01, 0.06, 80, yellow],
+        ["MV\nPneumatic", 0.51, 0.4, 0.02, 0.08, 78, yellow],
+        ["Fuel\nProp Inlet", .665, 0.55, 0.025, 0.08, 57, red],
+        ["LOx\nProp Inlet", .665, 0.3, 0.025, 0.08, 59, blue],
+        ["Fuel\nInjector", .76, .55, 0.015, 0.08, 58, red],
+
+        #["---: ", .55, 0.225, 0.03, 0.00, 0],
+        #["---: ", .55, 0.34, 0.03, 0.00, 0],
+        #["---: ", .55, 0.455, 0.03, 0.00, 0],
         # Engine Sensors
-        ["Fuel Inlet", .86, .38, 0.05, 0.04, 10],
-        ["Fuel Injector", .86, .46, 0.05, 0.04, 58],
-        ["LOX Injector", .86, .54, 0.05, 0.04, 12],
-        ["Pc Chamber 1", .7, .38, 0.05, 0.04, 56],
-        ["Pc Chamber 2", .7, .46, 0.05, 0.04, 55],
-        ["Pc Chamber 3", .7, .54, 0.05, 0.04, 15],
-        ["Temp\n ChamberExt", .86, .86, 0.05, 0.08, 16],
-        ["LC1: ", .725, .86, 0.065, 0, 17],
-        ["LC2: ", .725, .90, 0.065, 0, 18],
-        ["LC3: ", .725, .94, 0.065, 0, 19]
+        #["Fuel Inlet", .86, .38, 0.05, 0.04, 10],
+        #["LOX Injector", .86, .54, 0.05, 0.04, 12],
+        ["Pc\nChamber 1", .75, .75, 0.075, 0.01, 56, green],
+        ["Pc\nChamber 2", .75, .85, 0.075, 0.01, 55, green],
+        #["Pc Chamber 3", .7, .54, 0.05, 0.04, 15],
+        #["Temp\n ChamberExt", .86, .86, 0.05, 0.08, 16],
+        ["LC1: ", .65, .76, 0.035, 0, 17, green],
+        ["LC2: ", .65, .80, 0.035, 0, 18, green],
+        ["LC3: ", .65, .84, 0.035, 0, 19, green]
     ]
 
     def __init__(self, parent):
@@ -374,74 +389,85 @@ class PropulsionFrame:
         self.valve_list = []
 
         # A bunch of images that are in the UI
-        engineart = Image.open("GUI Images/Engine Clipart smol.png")
+        engineart = Image.open("GUI Images/Engine_Clipart.png")
         render = ImageTk.PhotoImage(engineart)
         img = Label(self.propFrame, image=render, bg='Black')
         img.image = render
-        img.place(relx=.735, rely=.40)
+        img.place(relx=.835, rely=.435)
 
-        LOXTankart = Image.open("GUI Images/TankPlainClipart.png")
+        LOXTankart = Image.open("GUI Images/LOxTankClipart.png")
         render = ImageTk.PhotoImage(LOXTankart)
         img = Label(self.propFrame, image=render, bg='Black')
         img.image = render
-        img.place(relx=.475, rely=.25)
+        img.place(relx=.425, rely=.15)
 
-        FuelTankart = Image.open("GUI Images/TankPlainClipart.png")
+        FuelTankart = Image.open("GUI Images/FuelTankClipart.png")
         render = ImageTk.PhotoImage(FuelTankart)
         img = Label(self.propFrame, image=render, bg='Black')
         img.image = render
-        img.place(relx=.475, rely=.615)
+        img.place(relx=.425, rely=.7475)
 
-        COPVTankart = Image.open("GUI Images/TankPlainClipartCOPV.png")
+        COPVTankart = Image.open("GUI Images/PressurantTankClipart.png")
         render = ImageTk.PhotoImage(COPVTankart)
         img = Label(self.propFrame, image=render, bg='Black')
         img.image = render
         img.place(relx=.0, rely=.0)
 
-        DomeRegart = Image.open("GUI Images/AquaDomeReg Clipart.png")
+        DomeRegart = Image.open("GUI Images/AquaDomeReg_Clipart.png")
         render = ImageTk.PhotoImage(DomeRegart)
         img = Label(self.propFrame, image=render, bg='Black')
         img.image = render
-        img.place(relx=.23, rely=.185)
+        img.place(relx=.175, rely=.115)
 
         img = Label(self.propFrame, image=render, bg='Black')
         img.image = render
-        img.place(relx=.23, rely=.55)
+        img.place(relx=.175, rely=.725)
+        
+        self.propFrame.create_rectangle(60,10,250,100,outline = yellow, fill="black")
+        self.propFrame.create_rectangle(300,10,500,100,outline = blue,fill="black")
+        self.propFrame.create_rectangle(300,575,500,675,outline = red,fill="black")
+        self.propFrame.create_rectangle(675,260,775,360,outline = purple,fill="black")
+        self.propFrame.create_rectangle(850,500,1200,650,outline = green,fill="black")
+        self.propFrame.create_rectangle(875,375,1111,475,outline = red,fill="black")
+        self.propFrame.create_rectangle(875,200,1000,300,outline = blue,fill="black")
 
         # Lines showing the fluid flow routing in the fluid system
-        self.propFrame.create_line(25, 100, 25, 1000, fill="khaki", width=5)  #
-        self.propFrame.create_line(25, 475, 100, 475, fill="white", width=5)  #
-        self.propFrame.create_line(25, 325, 180, 325, fill="sienna", width=5)  #
-        self.propFrame.create_line(180, 70, 180, 475, fill="deep pink", width=5)  #
-        self.propFrame.create_line(180, 70, 260, 70, fill="grey", width=5)  #
-        self.propFrame.create_line(180, 475, 260, 475, fill="cyan", width=5)  #
-        self.propFrame.create_line(260, 60, 260, 120, fill="bisque", width=5)  #
-        self.propFrame.create_line(260, 330, 260, 550, fill="blue", width=5)  #
-        self.propFrame.create_line(260, 120, 535, 120, fill="red", width=5)  #
-        self.propFrame.create_line(535, 120, 535, 300, fill="ivory4", width=5)  #
-        self.propFrame.create_line(420, 120, 420, 10, fill="dark slate gray", width=5)  #
-        self.propFrame.create_line(535, 300, 665, 300, fill="yellow", width=5)  #
-        self.propFrame.create_line(665, 300, 665, 50, fill="green", width=5)  #
-        self.propFrame.create_line(665, 50, 900, 50, fill="orange", width=5)  #
-        # self.propFrame.create_line(900, 50, 900, 120, fill="snow4", width=5)
-        self.propFrame.create_line(830, 110, 900, 110, fill="aquamarine4", width=5)  #
-        self.propFrame.create_line(900, 50, 900, 110, fill="dark violet", width=5)  #
-        self.propFrame.create_line(260, 325, 535, 325, fill="lime green", width=5)  #
-        self.propFrame.create_line(420, 325, 420, 500, fill="green", width=5)  #
-        self.propFrame.create_line(535, 325, 535, 500, fill="navy", width=5)  #
-        self.propFrame.create_line(535, 500, 690, 500, fill="indian red", width=5)  #
-        self.propFrame.create_line(690, 500, 690, 110, fill="lightpink1", width=5)  #
-        self.propFrame.create_line(690, 110, 800, 110, fill="yellow4", width=5)  #
-        self.propFrame.create_line(800, 110, 800, 300, fill="salmon", width=5)  #
-        self.propFrame.create_line(830, 110, 830, 300, fill="green", width=5)
+        self.propFrame.create_line(25, 100, 25, 1100, fill=yellow, width=5)  #
+        self.propFrame.create_line(25, 625, 200, 625, fill=yellow, width=5)  #
+        self.propFrame.create_line(25, 337, 180, 337, fill=yellow, width=5)  #
+        self.propFrame.create_line(180, 130, 180, 550, fill=yellow, width=5)  #
+        self.propFrame.create_line(180, 550, 600, 550, fill=yellow, width=5)  #
+        self.propFrame.create_line(180, 130, 600, 130, fill=yellow, width=5)  #
+        
+        self.propFrame.create_line(260, 100, 260, 550, fill="purple", width=5)  #
+        self.propFrame.create_line(180, 337, 660, 337, fill="purple", width=5)  #
+        self.propFrame.create_line(260, 425, 460, 425, fill="purple", width=5)  #
+        self.propFrame.create_line(260, 235, 460, 235, fill="purple", width=5)  #
+        self.propFrame.create_line(660, 215, 660, 450, fill="purple", width=5)  #
+        self.propFrame.create_line(660, 215, 800, 215, fill="purple", width=5)  #
+        self.propFrame.create_line(660, 450, 800, 450, fill="purple", width=5)  #
+
+        #self.propFrame.create_line(180, 325, 260, 325, fill="purple", width=5)  #
+
+        self.propFrame.create_line(475, 130, 800, 130, fill=blue, width=5)  #
+        self.propFrame.create_line(800, 130, 800, 325, fill=blue, width=5)  #
+        self.propFrame.create_line(800, 325, 1150, 325, fill=blue, width=5)  #
+        self.propFrame.create_line(540, 130, 540, 50, fill=blue, width=5)  #
+        self.propFrame.create_line(540, 50, 740, 50, fill=blue, width=5)  #
+
+        self.propFrame.create_line(475, 550, 800, 550, fill=red, width=5)  #
+        self.propFrame.create_line(800, 550, 800, 350, fill=red, width=5)  #
+        self.propFrame.create_line(800, 350, 1150, 350, fill=red, width=5)  #
+        self.propFrame.create_line(540, 550, 540, 650, fill=red, width=5)  #
+        self.propFrame.create_line(540, 650, 740, 650, fill=red, width=5)  #
 
         # Instantiates Every Valve
         for valve in PropulsionFrame.valves:
             self.valve_list.append(Valves(self.propFrame, valve))
 
-        self.photo = PhotoImage(file="GUI Images/ManualOverrideDisabledButton.png").subsample(2)
+        self.photo = PhotoImage(file="GUI Images/ManualOverrideDisabledButton.png")
         self.Button = Button(self.parent, image=self.photo, fg='red', bg='black', bd=5)
-        self.Button.place(relx=.735, rely=0.205)
+        self.Button.place(relx=.635, rely=0.205)
         self.Button.bind('<Double-1>', self.KillSwitch)  # bind double left clicks
 
         # Instantiates Every Valve
@@ -497,11 +523,14 @@ class Sensors:
         self.parent = parent
         self.args = args
         self.stateID = args[5]
+        self.color = args[6]
+        
+        aFont = tkFont.Font(family="Verdana",size=10,weight="bold")
 
-        self.label = Label(parent, text=args[0], font=("Verdana", 10), fg='white', bg='black')
+        self.label = Label(parent, text=args[0], font=aFont, fg=self.color, bg='black')
         self.label.place(relx=args[1], rely=args[2], anchor="nw")
         # Makes label with the reading for its corresponding sensor
-        self.ReadingLabel = Label(parent, text="N/A", font=("Verdana", 10), fg='orange', bg='grey')
+        self.ReadingLabel = Label(parent, text="N/A", font=("Verdana", 12), fg='orange', bg='black')
         self.ReadingLabel.place(relx=args[1] + args[3], rely=args[2] + args[4], anchor="nw")
 
     # Updates the reading
@@ -512,8 +541,10 @@ class Sensors:
             value = 0
         else:
             value = CanReceive.Sensors[self.stateID]
-        self.ReadingLabel.config(text=value)  # Updates the label with the updated value
-
+        if value >= DANGERZONE:
+            self.ReadingLabel.config(fg=red, text=str(value) +" psi")  # Updates the label with the updated value
+        else:
+            self.ReadingLabel.config(fg=orange, text=str(value) +" psi")  # Updates the label with the updated value
 
 class Valves:
     def __init__(self, parent, args):
@@ -544,7 +575,7 @@ class Valves:
             #self.photo = PhotoImage(file="Valve Buttons/" + self.name + "-Closed-EnableOn.png")  # .subsample(2)
             #self.Button = Button(self.parent, image=self.photo, fg='red', bg='black', bd=5)
             self.state = False
-            print(self.commandOFF)
+            #print(self.commandOFF)
             msg = can.Message(arbitration_id=self.commandID, data=[self.commandOFF], is_extended_id=False)
             bus.send(msg)
         else:
@@ -559,7 +590,7 @@ class Valves:
         #self.Button.bind('<Double-1>', self.ValveActuaction)
 
     def refresh_valve(self):
-        print(can_receive.node_state)
+        #print(can_receive.node_state)
         if self.id in can_receive.node_state and self.status is not can_receive.node_state[self.id]:
             self.status = can_receive.node_state[self.id]
             if self.status == 0:  # Closed
@@ -568,6 +599,8 @@ class Valves:
                 self.photo_name = "Valve Buttons/" + self.name + "-Open-EnableStale.png"
             elif self.status == 2:
                 self.photo_name = "Valve Buttons/" + self.name + "-FireCommanded-EnableStale.png"
+#             elif can_receive.currRefTime - can_receive.node_state_time[self.id] >= can_receive.staleTimeThreshold:
+#                 self.photo_name = "Valve Buttons/" + self.name + "-Stale-EnableStale.png"
             if not exists(self.photo_name):
                 print(self.photo_name + " Does not exist. Status is " + str(self.status))
             else:
@@ -580,13 +613,13 @@ class Valves:
 # Displays current time in top right corner
 class TimeFrame:
     def refresh_label(self):
-        time_label = Label(self.time_frame, fg="Orange", bg='grey',
+        time_label = Label(self.time_frame, fg="Orange", bg=darkgrey,
                            text=datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"), font=("Verdana", 17))
         time_label.place(relx=0, rely=0.1)
         self.time_frame.after(1000, self.refresh_label)
 
     def __init__(self, parent):
-        self.time_frame = Frame(parent, bg="gray", bd=5)
+        self.time_frame = Frame(parent, bg=darkgrey, bd=5)
         self.time_frame.place(relx=.815, rely=.008, relwidth=.185, relheight=0.05)
         self.time_frame.after(1000, self.refresh_label)
 
