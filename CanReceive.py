@@ -64,7 +64,7 @@ class CanReceive:
     valve_state_arr = ((), (), ("HP", "HPV", "LMV", "FMV"),
                        ("LV", "LDR", "LDV", "FV", "FDR", "FDV"))
     autosequence_state_arr = ("Standby", "RunCommanded", "Running", "Hold")
-    node_name_arr = ("PadGroundNode", "UpperPropNode")
+    node_name_arr = ("PadGroundNode", "UpperPropNode",0,0,0,0,0,0,0,0,0,0,0,"Pasafire",0,0,0,0,0,0)
     seconds_timer = 0
     millis_timer = 0
     #             ["COPV 1", 1, 0],
@@ -90,7 +90,8 @@ class CanReceive:
     #
     # Binary String of bools that hold the current position of the valves
     node_dict_list = {node_name_arr[0]: {"id": "0", "state": "Default State"},
-                      node_name_arr[1]: {"id": "0", "state": "Default State"}}
+                      node_name_arr[1]: {"id": "0", "state": "Default State"},
+                      node_name_arr[13]: {"id": "0", "state": "Default State"}}
     prop_node_dict = {"id": "0", "state": "Default State"}
     upper_prop_node_dict = {"id": "0", "state": "Default State"}
     node_state = {}
@@ -107,7 +108,6 @@ class CanReceive:
         while self.loop:
             msg_in = bus_receive.recv(timeout=None)
             # msg_in_1 = bus_receive_1.recv(timeout=None)
-            # print(msg_in_1)
             if CanReceive.startTime == 0:
                 CanReceive.startTime = time.time()
                 # CanReceive.firstNodeTime = 9
@@ -124,20 +124,23 @@ class CanReceive:
             seconds = 0
             millis = 0
             if len(data_list_hex) >= 4:
-                CanReceive.Sensors[msg_id] = int(data_list_hex[0:2], base=16) + int(data_list_hex[2:4], base=16)
+                CanReceive.Sensors[msg_id] = int(data_list_hex[0:2], base=16) + int(data_list_hex[2:4], base=16)*255
             if len(msg_in.data) >= 2:
                 seconds = msg_in.data[2]
             if len(data_list_hex) >= 9:
                 millis = int(data_list_hex[6:8], base=16) + int(data_list_hex[8:10], base=16)
             CanReceive.sensorTimestamps[msg_id] = seconds + (millis * 0.001)
-            if msg_id == 2 or msg_id == 3:  # Prop Node state report logic
+            if msg_id == 2 or msg_id == 3 or msg_id == 15 or msg_id == 31:  # Prop Node state report logic
                 node_data = ValveNodeState(msg_id, data_bin)
-                self.node_dict_list[self.node_name_arr[msg_id - 2]]["id"] = node_data.id
+                try:
+                    self.node_dict_list[self.node_name_arr[msg_id - 2]]["id"] = node_data.id
+                except:
+                    continue
                 self.node_dict_list[self.node_name_arr[msg_id - 2]]["state"] = node_data.state
                 for i in node_data.valves:
                     self.node_state[i.valve_id] = i.valve_state
                 # print()
-            elif msg_id == 18:
+            elif msg_id == 34 or msg_id == 47:
                 # print("Autosequence!")
                 state_byte = int(msg_in.data[0])
                 self.autosequence['state'] = str(state_byte)

@@ -15,9 +15,11 @@ from CanReceive import CanReceive
 
 # This code is initializing the bus variable with the channel and bustype.
 # noinspection PyTypeChecker
-bus = can.interface.Bus(channel='can1', bustype='socketcan')  # ///////////////
+bus = can.interface.Bus(channel='can0', bustype='socketcan')  # ///////////////
 
-DANGERZONE = 300
+DANGERZONE = 3000
+
+time = datetime.datetime.now()
 
 yellow = "yellow3"
 blue = "dodgerblue"
@@ -30,6 +32,14 @@ orange = 'orange'
 class NodeFrame:
     # Number of Nodes that will be displayed. Used to size the each individual frame
     numberOfSubframes = 3
+    
+    sensorSettingList =[
+        ("OFF", 126),
+        ("SLOW", 127),
+        ("MEDIUM", 128),
+        ("FAST", 129),
+        ("CALIBRATION", 130)
+    ]
 
     def __init__(self, parent):
         # Create over arching frame for all the Nodes will be placed in
@@ -37,7 +47,7 @@ class NodeFrame:
         self.nodeFrame.place(relx=0.405, rely=0, relwidth=.81, relheight=0.2, anchor="n")
 
         # Instantiates the Individual Nodes
-        self.telemetryFrame = self.Node(self.nodeFrame,commandRESET=244, name = "PasafireNode",  canID=700)
+        self.telemetryFrame = self.Node(self.nodeFrame,commandRESET=244, name = "Pasafire",  canID=700)
         # Array with the labels
         self.telemetryFrame.labelarray = ["Pasafire Node", "Activity: ", "Temp: ", "Bus Info"]
         # Adds in the labels into the frame
@@ -54,14 +64,39 @@ class NodeFrame:
         globalResetButton = Button(self.nodeFrame, text="Reset", command=lambda: self.Reset(), font=("Verdana", 10),
                                    fg='black', bg='orange', bd=5)
         globalResetButton.place(
-            relx=(1 / (NodeFrame.numberOfSubframes + 1 / 2) + 0.0015) * (NodeFrame.numberOfSubframes), rely=1 / 4,
+            relx=(1 / (NodeFrame.numberOfSubframes + 1 / 2) + 0.0015) * (NodeFrame.numberOfSubframes), rely=0,
             relwidth=1 - (1 / (NodeFrame.numberOfSubframes + 1 / 2) + 0.0015) * (NodeFrame.numberOfSubframes),
             relheight=1 / 2)
         self.refresh_label()
-
+        
+#         self.sampleSettingDefault = "SLOW"
+#         self.sampleSettingButton = Button(self.nodeFrame, text=self.sampleSettingDefault, command=lambda: self.SampleSettingChange(), font=("Verdana", 10),
+#                                    fg='orange', bg='grey15', bd=5)
+#         self.sampleSettingButton.place(
+#             relx=(1/ (NodeFrame.numberOfSubframes + 1 / 2) + 0.0015) * (NodeFrame.numberOfSubframes)+0.025, rely=9/16,
+#             relwidth=(1 - (1 / (NodeFrame.numberOfSubframes + 1 / 2) + 0.0015) * (NodeFrame.numberOfSubframes))/1.5,
+#             relheight=1 / 3)
+#         
+#     def SampleSettingChange(self):
+#         if StateButtons.CurrState == "Test":
+#             for i in range(len(NodeFrame.sensorSettingList)):
+#                 if NodeFrame.sensorSettingList[i][0] == self.sampleSettingDefault:
+#                     if len(NodeFrame.sensorSettingList) <= i+1:
+#                         self.sampleSettingButton.config(text=NodeFrame.sensorSettingList[0][0])
+#                         self.sampleSettingDefault = NodeFrame.sensorSettingList[0][0]
+#                         msg = can.Message(arbitration_id=1, data=[NodeFrame.sensorSettingList[0][1]], is_extended_id=False)  # ////
+#                         bus.send(msg)
+#                     else:
+#                         self.sampleSettingButton.config(text=NodeFrame.sensorSettingList[i+1][0])
+#                         self.sampleSettingDefault = NodeFrame.sensorSettingList[i+1][0]
+#                         msg = can.Message(arbitration_id=1, data=[NodeFrame.sensorSettingList[i+1][1]], is_extended_id=False)  # ////
+#                         bus.send(msg)
+#                     break
+                    
     def refresh_label(self):
         self.upperPropSystemFrame.refresh_label()
         self.engineFrame.refresh_label()
+        self.telemetryFrame.refresh_label()
         self.nodeFrame.after(100, self.refresh_label)
 
     class Node:
@@ -238,7 +273,7 @@ class StateButtons:
                 self.passiveState.place(relx=.1, rely=0.0125, relwidth=.8, relheight=1 / 30)
                 #Actuates the state clicked
                 self.StateActuaction()
-                print(self.prevState.stateName)
+                #print(self.prevState.stateName)
                 if self.prevState.stateName != "Test":
                     self.prevState.StateActuaction()
                 StateButtons.CurrState = self.stateName
@@ -265,7 +300,6 @@ class StateButtons:
             self.button.config(fg= 'green')
             self.state = True
             if self.isVentAbort:
-                print("hi")
                 Main.leftframe.StateReset()
             msg = can.Message(arbitration_id=self.commandID, data=[self.commandON], is_extended_id=False)  # ////
             bus.send(msg)  # //////////////////////////////////////////////////////////////////////////////////////
@@ -338,7 +372,9 @@ class VentAbortFrame:
 
 
 class PropulsionFrame:
+    James = False
     killSwitchState = False
+    SensorData = ['0']*10
     # Displays all the sensor readings and what the current valve actuation state is
     # Also allows user to actuate valves individually if test mode is enabled
 
@@ -355,6 +391,8 @@ class PropulsionFrame:
         #('FDV', .265, .55, 23, 1, 46, 47),
         ('LMV', .565, 0.25, 24, 1, 48, 49),
         ('FMV', .565, .6, 25, 1, 50, 51),
+        ('IGN1', .8, .25, 26, 1, 52, 53),
+        ('IGN2', .9, .25, 27, 1, 54, 55)
     )
 
     # Data needed to set up the button
@@ -365,7 +403,7 @@ class PropulsionFrame:
         ["Fuel\nTank", 0.315, 0.855, 0.01, 0.06, 190, red],
         ["Fuel\nReg", 0.24, 0.855, 0.01, 0.06, 192, yellow],
         ["Lox\nTank", 0.315, 0.025, 0.01, 0.06, 191, blue],
-        ["Lox\nReg", 0.24, 0.025, 0.01, 0.06,192, yellow],
+        ["Lox\nReg", 0.24, 0.025, 0.01, 0.06,193, yellow],
         ["MV\nPneumatic", 0.51, 0.4, 0.02, 0.08, 196, yellow],
         ["Fuel\nProp Inlet", .665, 0.55, 0.025, 0.08,194, red],
         ["LOx\nProp Inlet", .665, 0.3, 0.025, 0.08, 195, blue],
@@ -475,8 +513,11 @@ class PropulsionFrame:
 
         self.photo = PhotoImage(file="GUI Images/ManualOverrideDisabledButton.png")
         self.Button = Button(self.parent, image=self.photo, fg='red', bg='black', bd=5)
-        self.Button.place(relx=.635, rely=0.205)
+        self.Button.place(relx=.7, rely=0.2)
         self.Button.bind('<Double-1>', self.KillSwitch)  # bind double left clicks
+        self.overrideCommandID = 1
+        self.overrideCommandOFF = 22
+        self.overrideCommandON = 23
 
         # Instantiates Every Valve
         for sensor in PropulsionFrame.sensors:
@@ -487,12 +528,29 @@ class PropulsionFrame:
 
     # Readings Refresher, Recursive Function
     def RefreshLabel(self):
+        if StateButtons.CurrState == "FIRE":
+            if not PropulsionFrame.James:
+                PropulsionFrame.James = True
+                Jamesart = Image.open("GUI Images/James.png")
+                #Resize the Image using resize method
+                resized_image= Jamesart.resize((300,205), Image.ANTIALIAS)
+                new_image= ImageTk.PhotoImage(resized_image)
+                #render = ImageTk.PhotoImage(Jamesart)
+                img = Label(self.parent, image=new_image, fg='red', bg='black', bd=5)
+                img.image = new_image
+                img.place(relx=.25, rely=.45)
         # for each sensor in the sensor list. refresh the label
         for sensor in self.sensorList:
             sensor.RefreshLabel()
+        with open('datalogging'+str(time)+ '.txt', 'a') as datalogging:
+            comma = ','
+            data = comma.join(PropulsionFrame.SensorData)
+            print(data)
+            datalogging.write(data)
+            datalogging.write('\n')
         for valve in self.valve_list:
             valve.refresh_valve()
-        self.sensorList[1].ReadingLabel.after(250, self.RefreshLabel)
+        self.sensorList[1].ReadingLabel.after(100, self.RefreshLabel)
 
     def KillSwitch(self, event):
         if StateButtons.CurrState != "Override":
@@ -506,24 +564,25 @@ class PropulsionFrame:
                                 StatesFrame.States[i][1] - 1)) - 1 / 18, relheight=1 / (len(StatesFrame.States) + 1),
                                                          relwidth=0.85)
         if PropulsionFrame.killSwitchState:
-            self.photo = PhotoImage(file="GUI Images/ManualOverrideDisabledButton.png").subsample(2)
+            self.photo = PhotoImage(file="GUI Images/ManualOverrideDisabledButton.png")
             self.Button = Button(self.parent, image=self.photo, fg='red', bg='black', bd=5)
             PropulsionFrame.killSwitchState = False
             self.reminderButtonOfCurrState.destroy()
             StateButtons.CurrState = self.savedCurrState
-            msg = can.Message(arbitration_id=self.commandID, data=[self.commandON], is_extended_id=False)
+            msg = can.Message(arbitration_id=self.overrideCommandID, data=[self.overrideCommandON], is_extended_id=False)
             bus.send(msg)
-        else:
-            self.photo = PhotoImage(file="GUI Images/ManualOverrideEnabledButton.png").subsample(2)
+        else:        
+            self.photo = PhotoImage(file="GUI Images/ManualOverrideEnabledButton.png")
             self.Button = Button(self.parent, image=self.photo, fg='green', bg='black', bd=5)
             PropulsionFrame.killSwitchState = True
             StateButtons.CurrState = "Override"
-            msg = can.Message(arbitration_id=self.commandID, data=[self.commandOFF], is_extended_id=False)
+            msg = can.Message(arbitration_id=self.overrideCommandID, data=[self.overrideCommandOFF], is_extended_id=False)
             bus.send(msg)
-        self.Button.place(relx=.735, rely=.2050)
+        self.Button.place(relx=.7, rely=0.2)
         self.Button.bind('<Double-1>', self.KillSwitch)  # bind double left clicks
 
         # On double press, Call KillSwitch function
+
 
 
 class Sensors:
@@ -549,6 +608,7 @@ class Sensors:
             value = 0
         else:
             value = CanReceive.Sensors[self.stateID]
+            PropulsionFrame.SensorData[self.stateID-190] = str(value)
         if value >= DANGERZONE:
             self.ReadingLabel.config(fg=red, text=str(value) +" psi")  # Updates the label with the updated value
         else:
@@ -560,7 +620,7 @@ class Valves:
         self.args = args
         self.state = False
         self.photo_name = args[0]
-        self.status = 0  # Keeps track of valve actuation state
+        self.status = 3  # Keeps track of valve actuation state
 
         self.name = args[0]
         self.x_pos = args[1]
@@ -582,15 +642,15 @@ class Valves:
         if self.state:
             #self.photo = PhotoImage(file="Valve Buttons/" + self.name + "-Closed-EnableOn.png")  # .subsample(2)
             #self.Button = Button(self.parent, image=self.photo, fg='red', bg='black', bd=5)
-            self.state = False
+            #self.state = False
             #print(self.commandOFF)
             msg = can.Message(arbitration_id=self.commandID, data=[self.commandOFF], is_extended_id=False)
             bus.send(msg)
         else:
             #self.photo = PhotoImage(file="Valve Buttons/" + self.name + "-Open-EnableOn.png")  # .subsample(2)
             #self.Button = Button(self.parent, image=self.photo, fg='green', bg='black', bd=5)
-            self.state = True
-            print(self.commandON)
+            #self.state = True
+            #print(self.commandON)
             msg = can.Message(arbitration_id=self.commandID, data=[self.commandON], is_extended_id=False)
             bus.send(msg)
         #self.Button.place(relx=self.x_pos, rely=self.y_pos)
@@ -600,19 +660,22 @@ class Valves:
     def refresh_valve(self):
         #print(can_receive.node_state)
         if self.id in can_receive.node_state and self.status is not can_receive.node_state[self.id]:
-            self.status = can_receive.node_state[self.id]
-            if self.status == 0:  # Closed
-                self.photo_name = "Valve Buttons/" + self.name + "-Closed-EnableStale.png"
-            elif self.status == 1:  # Open
-                self.photo_name = "Valve Buttons/" + self.name + "-Open-EnableStale.png"
-            elif self.status == 2:
-                self.photo_name = "Valve Buttons/" + self.name + "-FireCommanded-EnableStale.png"
-            if not exists(self.photo_name):
-                print(self.photo_name + " Does not exist. Status is " + str(self.status))
-            else:
-                #print(self.photo_name, self.status)
-                self.photo = PhotoImage(file=self.photo_name)
-                self.Button.config(image=self.photo)
+            if self.status != can_receive.node_state[self.id]:
+                self.status = can_receive.node_state[self.id]
+                if self.status == 0:  # Closed
+                    self.photo_name = "Valve Buttons/" + self.name + "-Closed-EnableStale.png"
+                    self.state = False
+                elif self.status == 1:  # Open
+                    self.photo_name = "Valve Buttons/" + self.name + "-Open-EnableStale.png"
+                    self.state = True
+                elif self.status == 2:
+                    self.photo_name = "Valve Buttons/" + self.name + "-FireCommanded-EnableStale.png"
+                if not exists(self.photo_name):
+                    print(self.photo_name + " Does not exist. Status is " + str(self.status))
+                else:
+                    #print(self.photo_name, self.status)
+                    self.photo = PhotoImage(file=self.photo_name)
+                    self.Button.config(image=self.photo)
 
 
 # Time Frame  ------------------------------------------------------------------------------------------------------
