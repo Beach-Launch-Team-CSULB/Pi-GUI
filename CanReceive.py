@@ -64,7 +64,7 @@ class CanReceive:
     valve_state_arr = ((), (), ("HP", "HPV", "LMV", "FMV"),
                        ("LV", "LDR", "LDV", "FV", "FDR", "FDV"))
     autosequence_state_arr = ("Standby", "RunCommanded", "Running", "Hold")
-    node_name_arr = ("PadGroundNode", "UpperPropNode",0,0,0,0,0,0,0,0,0,0,0,"Pasafire",0,0,0,0,0,0)
+    node_name_arr = ("PadGroundNode", "UpperPropNode", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "Pasafire", 0, 0, 0, 0, 0, 0)
     seconds_timer = 0
     millis_timer = 0
     #             ["COPV 1", 1, 0],
@@ -124,7 +124,7 @@ class CanReceive:
             seconds = 0
             millis = 0
             if len(data_list_hex) >= 4:
-                CanReceive.Sensors[msg_id] = int(data_list_hex[0:2], base=16) + int(data_list_hex[2:4], base=16)*255
+                CanReceive.Sensors[msg_id] = int(data_list_hex[0:2], base=16) + int(data_list_hex[2:4], base=16) * 255
             if len(msg_in.data) >= 2:
                 seconds = msg_in.data[2]
             if len(data_list_hex) >= 9:
