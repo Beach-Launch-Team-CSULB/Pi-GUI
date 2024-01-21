@@ -6,12 +6,6 @@ import time
 import struct
 
 class CanReceive:
-    Sensors = [0] * 1028
-    sensorTimestamps = [0] * 1028
-    Valves = [0] * 64
-    ValvesRenegadeEngine = [0] * 64
-    ValvesRenegadeProp = [0] * 64
-    Controllers = [[0] * 50, [0] * 50, [0] * 50, [0] * 50, [0] * 50, [0] * 50, [0] * 50, [0] * 50, [0] * 50, [0] * 50, [0] * 50, [0] * 50]
     VehicleStates = [
         "Setup",
         "Passive",
@@ -27,46 +21,73 @@ class CanReceive:
         "Fire Arm",
         "Fire"
         ]
-    NodeStatusBang = VehicleStates[0]
-    NodeStatusRenegadeEngine = VehicleStates[0]
-    NodeStatusRenegadeProp = VehicleStates[0]
-
-    AutosequenceTime = 0
-    AutosequenceTimeDupes = 0
-    ThrottlePoints = {}
+    
     def __init__(self, channel='can0', bustype='socketcan'):
         print("HI")
         self.loop = True
         self.busargs = {'channel':channel, 'bustype':bustype}
+
+        self.Sensors = [0] * 1028
+        self.sensorTimestamps = [0] * 1028
+        self.Valves = [0] * 64
+        self.ValvesRenegadeEngine = [0] * 64
+        self.ValvesRenegadeProp = [0] * 64
+        self.Controllers = [[0] * 50 for i in range(12)]
+
+        self.NodeStatusBang = CanReceive.VehicleStates[0]
+        self.NodeStatusRenegadeEngine = CanReceive.VehicleStates[0]
+        self.NodeStatusRenegadeProp = CanReceive.VehicleStates[0]
+
+        self.AutosequenceTime = 0
+        self.ThrottlePoints = {}
+        self.AutosequenceTimeDupes = 0
 
     def run(self):
         # starts Canbus
         #bus_type = 'virtual'#'socketcan'
         #channel0 = 'vcan0'
         bus_receive = can.interface.Bus(**self.busargs)#channel=channel0, bustype=bus_type)
-
+        ###print("initializing new can")
+        ###print()
+        ###yield # initial yield to init the bus. Why isn't this in init??
+        
         while self.loop:
+            ###print("waiting for message in...")
             msg_in = bus_receive.recv(timeout=None)
+            ###print("bus mentioned")
 
-            # Grabs Message ID
-            msg_id = int(msg_in.arbitration_id)
             try:
-                msg_id_bin = str(bitstring.BitArray(int=msg_id, length=32).bin)
+                ID_A, msg_id_bin, data_bin, data_list_hex = \
+                      self.parseMessage(msg_in)
             except Exception as e:
                 print(e)
                 continue
-            ID_A_bin = msg_id_bin[-11:]
-            ID_A = ba2int(bitarray(ID_A_bin))
-            # Grabs the data in the msg
-            data_list_hex = msg_in.data.hex()
-            data_bin = bitstring.BitArray(hex=data_list_hex).bin
-
-            # if data is empty
-#             if data_list_hex[0:16] == '':
-#                 continue
-            
+        
+            ###print("parsed message as:")
+            ###print(ID_A, data_list_hex)
+            ###print("")
+            ###print("translating message:")
             self.translateMessage(ID_A, msg_id_bin, data_bin, data_list_hex)
-            
+            ###print("")
+            ###print("yield")
+            ###yield
+
+    def parseMessage(self, msg_in):
+        # Grabs Message ID
+        msg_id = int(msg_in.arbitration_id)
+        msg_id_bin = str(bitstring.BitArray(int=msg_id, length=32).bin)
+        ID_A_bin = msg_id_bin[-11:]
+        ID_A = ba2int(bitarray(ID_A_bin))
+        # Grabs the data in the msg
+        data_list_hex = msg_in.data.hex()
+        data_bin = bitstring.BitArray(hex=data_list_hex).bin
+
+        # if data is empty
+#       if data_list_hex[0:16] == '':
+#           continue
+        
+        return ID_A, msg_id_bin, data_bin, data_list_hex
+    
     def translateMessage(self, ID_A, msg_id_bin, data_bin, data_list_hex):
 
         if ID_A == 546:
@@ -107,17 +128,17 @@ class CanReceive:
             HP1 = ba2int(bitarray(HP1_bin))
             #print(HP1)
             #print(msg_id_bin)
-            CanReceive.ValvesRenegadeEngine[1] = HP1
+            self.ValvesRenegadeEngine[1] = HP1
 
         HP2_bin = int(msg_id_bin[4:12])
         HP2_bin = str(HP2_bin)[::-1]
         HP2 = ba2int(bitarray(HP2_bin))
 
-        CanReceive.ValvesRenegadeEngine[2] = HP2
+        self.ValvesRenegadeEngine[2] = HP2
         for i in range(3, 11):
             HPi_bin = data_bin[(i - 3) * 8:(i - 2) * 8]
             HPi = ba2int(bitarray(HPi_bin))
-            CanReceive.ValvesRenegadeEngine[i] = HPi
+            self.ValvesRenegadeEngine[i] = HPi
     
     def ID_552(self, ID_A, msg_id_bin, data_bin, data_list_hex):
         """
@@ -131,17 +152,17 @@ class CanReceive:
             HP1 = ba2int(bitarray(HP1_bin))
             #print(HP1)
             #print(msg_id_bin)
-            CanReceive.Valves[1] = HP1
+            self.Valves[1] = HP1
 
         HP2_bin = int(msg_id_bin[4:12])
         HP2_bin = str(HP2_bin)[::-1]
         HP2 = ba2int(bitarray(HP2_bin))
 
-        CanReceive.Valves[2] = HP2
+        self.Valves[2] = HP2
         for i in range(3, 11):
             HPi_bin = data_bin[(i - 3) * 8:(i - 2) * 8]
             HPi = ba2int(bitarray(HPi_bin))
-            CanReceive.Valves[i] = HPi
+            self.Valves[i] = HPi
 
     def ID_547(self, ID_A, msg_id_bin, data_bin, data_list_hex):
         """
@@ -155,17 +176,17 @@ class CanReceive:
             HP1 = ba2int(bitarray(HP1_bin))
             #print(HP1)
             #print(msg_id_bin)
-            CanReceive.ValvesRenegadeProp[1] = HP1
+            self.ValvesRenegadeProp[1] = HP1
 
         HP2_bin = int(msg_id_bin[4:12])
         HP2_bin = str(HP2_bin)[::-1]
         HP2 = ba2int(bitarray(HP2_bin))
 
-        CanReceive.ValvesRenegadeProp[2] = HP2
+        self.ValvesRenegadeProp[2] = HP2
         for i in range(3, 11):
             HPi_bin = data_bin[(i - 3) * 8:(i - 2) * 8]
             HPi = ba2int(bitarray(HPi_bin))
-            CanReceive.ValvesRenegadeProp[i] = HPi
+            self.ValvesRenegadeProp[i] = HPi
     
     def ID_Between_510_530(self, ID_A, msg_id_bin, data_bin, data_list_hex):
         "NODE STATES"
@@ -173,11 +194,11 @@ class CanReceive:
         "Prop Node 3"
         try:
             if ID_A == 514: 
-                CanReceive.NodeStatusRenegadeEngine = CanReceive.VehicleStates[int(data_list_hex[0:2], 16)]
+                self.NodeStatusRenegadeEngine = CanReceive.VehicleStates[int(data_list_hex[0:2], 16)]
             if ID_A == 515: 
-                CanReceive.NodeStatusRenegadeProp = CanReceive.VehicleStates[int(data_list_hex[0:2], 16)]
+                self.NodeStatusRenegadeProp = CanReceive.VehicleStates[int(data_list_hex[0:2], 16)]
             if ID_A == 520: 
-                CanReceive.NodeStatusBang = CanReceive.VehicleStates[int(data_list_hex[0:2], 16)]
+                self.NodeStatusBang = CanReceive.VehicleStates[int(data_list_hex[0:2], 16)]
             self.translateMessage(ID_A, msg_id_bin, data_bin, data_list_hex)
         except:
             return
@@ -192,47 +213,47 @@ class CanReceive:
             TimeStamp = ba2int(bitarray(TimeStamp_bin))
             msg_id = ID_A
             value = ba2int(bitarray(data_bin[0:16]), signed = False)
-            CanReceive.Sensors[msg_id] = value/10
-            CanReceive.sensorTimestamps[msg_id] = TimeStamp
+            self.Sensors[msg_id] = value/10
+            self.sensorTimestamps[msg_id] = TimeStamp
             #print(msg_id, value/10, data_list_hex,data_bin[0:16])
             if len(data_list_hex) > 6:
                 msg_id_2 = int(data_list_hex[4:6], base=16)
                 value_2 =  ba2int(bitarray(data_bin[24:40]), signed = False)
-                CanReceive.Sensors[msg_id_2] = value_2/10
-                CanReceive.sensorTimestamps[msg_id_2] = TimeStamp
+                self.Sensors[msg_id_2] = value_2/10
+                self.sensorTimestamps[msg_id_2] = TimeStamp
                 #print(msg_id_2, value_2/10, data_list_hex,data_bin[24:40])
 
             if len(data_list_hex) > 12:
 
                 msg_id_3 = int(data_list_hex[10:12], base=16)
                 value_3 = ba2int(bitarray(data_bin[48:64]), signed = False)
-                CanReceive.Sensors[msg_id_3] = value_3/10
-                CanReceive.sensorTimestamps[msg_id_3] = TimeStamp
+                self.Sensors[msg_id_3] = value_3/10
+                self.sensorTimestamps[msg_id_3] = TimeStamp
                 #print(msg_id_3, value_3/10, data_list_hex,data_bin[48:64])
 
     def ID_1100_Controller(self, ID_A, msg_id_bin, data_bin, data_list_hex):
         "AUTOSEQUENCE"
-        CanReceive.PrevAutosequenceTime = CanReceive.AutosequenceTime
-        CanReceive.AutosequenceTime = ba2int(bitarray(data_bin), signed = True)/1000000
+        self.PrevAutosequenceTime = self.AutosequenceTime
+        self.AutosequenceTime = ba2int(bitarray(data_bin), signed = True)/1000000
 
-        if CanReceive.PrevAutosequenceTime == CanReceive.AutosequenceTime:
-            CanReceive.AutosequenceTimeDupes += 1
+        if self.PrevAutosequenceTime == self.AutosequenceTime:
+            self.AutosequenceTimeDupes += 1
         else:
-            print(CanReceive.AutosequenceTimeDupes, "Dupes parsed.")
-            print("Autosequence Time:", CanReceive.AutosequenceTime)
-            CanReceive.AutosequenceTimeDupes = 0
+            print(self.AutosequenceTimeDupes, "Dupes parsed.")
+            print("Autosequence Time:", self.AutosequenceTime)
+            self.AutosequenceTimeDupes = 0
 
     def ID_1506_Controller(self, ID_A, msg_id_bin, data_bin, data_list_hex):
         Time = int(data_list_hex[0:4], base=16)
         ThrottlePoint = int(data_list_hex[4:8], base=16)
         if Time == 0:
-            CanReceive.ThrottlePoints = []
+            self.ThrottlePoints = []
         #print(Time, ThrottlePoint)
-        CanReceive.ThrottlePoints.append([Time, ThrottlePoint])
+        self.ThrottlePoints.append([Time, ThrottlePoint])
         try:
             Time = int(data_list_hex[8:12], base=16)
             ThrottlePoint = int(data_list_hex[12:16], base=16)
-            CanReceive.ThrottlePoints.append([Time, ThrottlePoint])
+            self.ThrottlePoints.append([Time, ThrottlePoint])
         except:
             return
 
@@ -243,26 +264,26 @@ class CanReceive:
             
             if ID_A == 1502 or ID_A == 1504:
                 value_1 = ba2int(bitarray(data_bin[0:32]), signed = True)
-                CanReceive.Controllers[ControllerID][ControllerIndex] = value_1
+                self.Controllers[ControllerID][ControllerIndex] = value_1
                 value_2 = ba2int(bitarray(data_bin[32:64]), signed = True)
-                CanReceive.Controllers[ControllerID][ControllerIndex + 1] = value_2
+                self.Controllers[ControllerID][ControllerIndex + 1] = value_2
             elif ControllerIndex == 14 or ControllerIndex == 15:
                 value_1 = int(data_bin[0:32],2)
-                CanReceive.Controllers[ControllerID][ControllerIndex] = value_1
+                self.Controllers[ControllerID][ControllerIndex] = value_1
                 value_2 = int(data_bin[32:64],2)
-                CanReceive.Controllers[ControllerID][ControllerIndex + 1] = value_2
+                self.Controllers[ControllerID][ControllerIndex + 1] = value_2
             else:
                 value_1 = int(data_bin[0:32],2)
                 value_1 = struct.unpack('f', struct.pack('I', value_1))[0]
-                CanReceive.Controllers[ControllerID][ControllerIndex] = value_1
+                self.Controllers[ControllerID][ControllerIndex] = value_1
                 value_2 = int(data_bin[32:64],2)
                 value_2 = struct.unpack('f', struct.pack('I', value_2))[0]
-                CanReceive.Controllers[ControllerID][ControllerIndex + 1] = value_2
+                self.Controllers[ControllerID][ControllerIndex + 1] = value_2
         else:
             
             value_1 = int(data_bin[0:32],2)
             value_1 = struct.unpack('f', struct.pack('I', value_1))[0]
-            CanReceive.Controllers[ControllerID][ControllerIndex] = value_1
+            self.Controllers[ControllerID][ControllerIndex] = value_1
 
 
 

@@ -24,6 +24,7 @@ try:
     bus = can.interface.Bus(channel='can0', bustype='socketcan')  # ///////////////
     CanStatus = True
     from CanReceive import CanReceive
+    canReceive = None
 
 except AttributeError:
     CanStatus = False
@@ -137,7 +138,9 @@ class Main:
     # System starts off in a passive state
     CurrState = "Passive"
 
-    def __init__(self):
+    def __init__(self, canReceive):
+        self.canReceive = canReceive
+
         self.appMainScreen = None
         self.parentMainScreen = None
 
@@ -275,14 +278,14 @@ class Main:
 
         # On double press, Call KillSwitch function
     def ThrottlePoints(self):
-        if CanReceive.ThrottlePoints != self.ThrottlePointsStorage:
-            self.ThrottlePointsStorage = CanReceive.ThrottlePoints
+        if self.canReceive.ThrottlePoints != self.ThrottlePointsStorage:
+            self.ThrottlePointsStorage = self.canReceive.ThrottlePoints
             aFont = tkFont.Font(family="Verdana", size=10, weight="bold")
-            print(CanReceive.ThrottlePoints)
-            for throttlepoint in range(len(CanReceive.ThrottlePoints)):
-                Timelabel = Label(self.parentSecondScreen, text = "T + " + str(CanReceive.ThrottlePoints[throttlepoint][0]), fg = green, bg = black, font = aFont)
+            print(self.canReceive.ThrottlePoints)
+            for throttlepoint in range(len(self.canReceive.ThrottlePoints)):
+                Timelabel = Label(self.parentSecondScreen, text = "T + " + str(self.canReceive.ThrottlePoints[throttlepoint][0]), fg = green, bg = black, font = aFont)
                 Timelabel.place(relx = 0.6, rely = 0.5 + throttlepoint*.1)
-                Pressurelabel = Label(self.parentSecondScreen, text = "Pressure: "+ str(CanReceive.ThrottlePoints[throttlepoint][1]), fg = green, bg = black, font = aFont)
+                Pressurelabel = Label(self.parentSecondScreen, text = "Pressure: "+ str(self.canReceive.ThrottlePoints[throttlepoint][1]), fg = green, bg = black, font = aFont)
                 Pressurelabel.place(relx = 0.65, rely = 0.5 + throttlepoint*.1)
     
     # Readings Refresher, Recursive Function
@@ -340,10 +343,10 @@ class Main:
             for controller in self.controllerList:
                 controller.Refresh()
 
-            self.autosequence_str = "T  " + str(CanReceive.AutosequenceTime) + " s"
+            self.autosequence_str = "T  " + str(self.canReceive.AutosequenceTime) + " s"
             self.autoseqence.config(text=self.autosequence_str)
             self.time.config(text=datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
-            #self.nodeState.config(text=CanReceive.NodeStatus)  # can_receive.node_dict_list[self.name]["state"]))
+            #self.nodeState.config(text=self.canReceive.NodeStatus)  # can_receive.node_dict_list[self.name]["state"]))
 
             self.sensorList[1].ReadingLabel.after(GRAPHDATAREFRESHRATE, self.Refresh)
         else:
@@ -353,8 +356,8 @@ class Main:
 
             self.sensorList[1].ReadingLabel.after(GRAPHDATAREFRESHRATE, self.Refresh)
             
-        self.EngineNodeState.config(text = "Engine Node State: " + CanReceive.NodeStatusRenegadeEngine)
-        self.PropNodeState.config(text = "Prop Node State: " + CanReceive.NodeStatusRenegadeProp)
+        self.EngineNodeState.config(text = "Engine Node State: " + self.canReceive.NodeStatusRenegadeEngine)
+        self.PropNodeState.config(text = "Prop Node State: " + self.canReceive.NodeStatusRenegadeProp)
 
     def StateReset(self):
         Main.CurrState = "Passive"
@@ -773,15 +776,15 @@ class Main:
         self.Abort.VentAbortInstantiation()
         # Instantiates Every Valve
         for valve in Main.valves:
-            self.valveList.append(Valves(self.parentMainScreen, valve, self.parentSecondScreen))
+            self.valveList.append(Valves(self.parentMainScreen, valve, self.parentSecondScreen, self.canReceive))
 
         # Instantiates Every Sensor
         for sensor in Main.sensors:
-            self.sensorList.append(Sensors(self.parentMainScreen, sensor, self.parentSecondScreen))
+            self.sensorList.append(Sensors(self.parentMainScreen, sensor, self.parentSecondScreen, self.canReceive))
 
         # Instantiates Every Sensor
         for controller in Main.Controllers:
-            self.controllerList.append(Controller(controller, self.parentMainScreen, self.parentSecondScreen))
+            self.controllerList.append(Controller(controller, self.parentMainScreen, self.parentSecondScreen, self.canReceive))
 
         self.Menus(self.parentMainScreen, self.appMainScreen)
         self.Menus(self.parentSecondScreen, self.appSecondScreen)
@@ -837,7 +840,8 @@ class Main:
 class Sensors:
     numOfSensors = 0
 
-    def __init__(self, parent, args, SecondScreen):
+    def __init__(self, parent, args, SecondScreen, canReceive):
+        self.canReceive = canReceive
         self.parent = parent
         self.SecondScreen = SecondScreen
         self.args = args
@@ -939,19 +943,20 @@ class Sensors:
     def Refresh(self, LabelRefresh):
         value = random.randint(1, 100)
         if CanStatus:
-            value = CanReceive.Sensors[self.idConv]
+            value = self.canReceive.Sensors[self.idConv]
         self.sensorData = self.sensorData[1:] + self.sensorData[:1]
         self.sensorData[-1] = value
         self.index += 1
         if LabelRefresh:
             self.ReadingLabel.config(fg=orange,text=str(value) + " psi")  # Updates the label with the updated value
             self.ConvReadingLabel2.config(fg=orange,text=str(value) + " psi")
-            #self.RawReadingLabel2.config(text=str(CanReceive.Sensors[self.idRaw]))
+            #self.RawReadingLabel2.config(text=str(self.canReceive.Sensors[self.idRaw]))
 
 class Valves:
     numOfValves = 0
 
-    def __init__(self, parent, args, SecondScreen):
+    def __init__(self, parent, args, SecondScreen, canReceive):
+        self.canReceive = canReceive
         self.parent = parent
         self.SecondScreen = SecondScreen
         self.args = args
@@ -1090,14 +1095,14 @@ class Valves:
         #     self.status = can_receive.node_state[self.id]
         if CanStatus:
             if self.args[9] == 3:
-                if self.status == CanReceive.ValvesRenegadeProp[self.HPChannel]:
+                if self.status == self.canReceive.ValvesRenegadeProp[self.HPChannel]:
                     pass
-                self.status = CanReceive.ValvesRenegadeProp[self.HPChannel]
+                self.status = self.canReceive.ValvesRenegadeProp[self.HPChannel]
             if self.args[9] == 2:
-                if self.status == CanReceive.ValvesRenegadeEngine[self.HPChannel]:
+                if self.status == self.canReceive.ValvesRenegadeEngine[self.HPChannel]:
                     pass
-                self.status = CanReceive.ValvesRenegadeEngine[self.HPChannel]
-            self.VoltageLabel2.config(text = CanReceive.Sensors[self.args[8]])
+                self.status = self.canReceive.ValvesRenegadeEngine[self.HPChannel]
+            self.VoltageLabel2.config(text = self.canReceive.Sensors[self.args[8]])
             
             if self.status == 0:  # Closed
                 self.photo_name = "Valve Buttons/" + self.name + "-Closed-EnableStale.png"
@@ -1218,7 +1223,8 @@ class States:
 class Controller:
     TankControllers = 0
 
-    def __init__(self, args, Screen1, Screen2):
+    def __init__(self, args, Screen1, Screen2, canReceive):
+        self.canReceive = canReceive
         self.name = args[0]
         self.id = args[1]
         self.isAPropTank = args[2]
@@ -1279,19 +1285,19 @@ class Controller:
         if "Engine" in self.name:
             self.LOXMVTime = Label(self.parent2, text = "LOX MV\nTime (ms)", fg = blue, bg = black, font = aFont)
             self.LOXMVTime.place(relx = 0.45, rely = 0.625)
-            self.LOXMVTime2 = Label(self.parent2, text = str(CanReceive.Controllers[self.id][3]/1000), fg = orange, bg = black, font = ("Verdana", 9))
+            self.LOXMVTime2 = Label(self.parent2, text = str(self.canReceive.Controllers[self.id][3]/1000), fg = orange, bg = black, font = ("Verdana", 9))
             self.LOXMVTime2.place(relx = 0.45, rely = 0.675)
             self.FuelMVTime = Label(self.parent2, text = "Fuel MV\nTime (ms)", fg = red, bg = black, font = aFont)
             self.FuelMVTime.place(relx = 0.525, rely = 0.625)
-            self.FuelMVTime2 = Label(self.parent2, text = str(CanReceive.Controllers[self.id][2]/1000), fg = orange, bg = black, font = ("Verdana", 9))
+            self.FuelMVTime2 = Label(self.parent2, text = str(self.canReceive.Controllers[self.id][2]/1000), fg = orange, bg = black, font = ("Verdana", 9))
             self.FuelMVTime2.place(relx = 0.525, rely = 0.675)
             self.IGN1Time = Label(self.parent2, text = "IGN 1\nTime (ms)", fg = green, bg = black, font = aFont)
             self.IGN1Time.place(relx = 0.45, rely = 0.525)
-            self.IGN1Time2 = Label(self.parent2, text = str(CanReceive.Controllers[self.id][4]/1000), fg = orange, bg = black, font = ("Verdana", 9))
+            self.IGN1Time2 = Label(self.parent2, text = str(self.canReceive.Controllers[self.id][4]/1000), fg = orange, bg = black, font = ("Verdana", 9))
             self.IGN1Time2.place(relx = 0.45, rely = 0.575)
             self.IGN2Time = Label(self.parent2, text = "IGN 2\nTime (ms)", fg = green, bg = black, font = aFont)
             self.IGN2Time.place(relx = 0.525, rely = 0.525)
-            self.IGN2Time2 = Label(self.parent2, text = str(CanReceive.Controllers[self.id][5]/1000), fg = orange, bg = black, font = ("Verdana", 9))
+            self.IGN2Time2 = Label(self.parent2, text = str(self.canReceive.Controllers[self.id][5]/1000), fg = orange, bg = black, font = ("Verdana", 9))
             self.IGN2Time2.place(relx = 0.525, rely = 0.575)
         # self.EMA.place(relx=.01, rely=0.575, relwidth=1 / 10, relheight=.02)
 
@@ -1455,23 +1461,23 @@ class Controller:
     def Refresh(self):
         if self.isAPropTank:
             if True:#CanStatus:
-                self.KpLabel2.config(text=CanReceive.Controllers[self.id][2])
-                self.KiLabel2.config(text=CanReceive.Controllers[self.id][3])
-                self.KdLabel2.config(text=CanReceive.Controllers[self.id][4])
-                self.EpLabel2.config(text=round(CanReceive.Controllers[self.id][6]))
-                self.EiLabel2.config(text=round(CanReceive.Controllers[self.id][8]))
-                self.EdLabel2.config(text=round(CanReceive.Controllers[self.id][10]))
-                self.PIDSUMLabel2.config(text=round(CanReceive.Controllers[self.id][13]))
-                self.TargetValueLabel2.config(text=CanReceive.Controllers[self.id][12])
-                self.ThresholdLabel2.config(text=CanReceive.Controllers[self.id][5])
-                self.EnergizeTime2.config(text=CanReceive.Controllers[self.id][14])
-                self.DenergizeTime2.config(text=CanReceive.Controllers[self.id][15])
-                self.VentFailSafePressure2.config(text=CanReceive.Controllers[self.id][16])
+                self.KpLabel2.config(text=self.canReceive.Controllers[self.id][2])
+                self.KiLabel2.config(text=self.canReceive.Controllers[self.id][3])
+                self.KdLabel2.config(text=self.canReceive.Controllers[self.id][4])
+                self.EpLabel2.config(text=round(self.canReceive.Controllers[self.id][6]))
+                self.EiLabel2.config(text=round(self.canReceive.Controllers[self.id][8]))
+                self.EdLabel2.config(text=round(self.canReceive.Controllers[self.id][10]))
+                self.PIDSUMLabel2.config(text=round(self.canReceive.Controllers[self.id][13]))
+                self.TargetValueLabel2.config(text=self.canReceive.Controllers[self.id][12])
+                self.ThresholdLabel2.config(text=self.canReceive.Controllers[self.id][5])
+                self.EnergizeTime2.config(text=self.canReceive.Controllers[self.id][14])
+                self.DenergizeTime2.config(text=self.canReceive.Controllers[self.id][15])
+                self.VentFailSafePressure2.config(text=self.canReceive.Controllers[self.id][16])
         elif "Engine" in self.name:
-            self.LOXMVTime2.config(text=CanReceive.Controllers[self.id][3]/1000)
-            self.FuelMVTime2.config(text=CanReceive.Controllers[self.id][2]/1000)
-            self.IGN1Time2.config(text=CanReceive.Controllers[self.id][4]/1000)
-            self.IGN2Time2.config(text=CanReceive.Controllers[self.id][5]/1000)
+            self.LOXMVTime2.config(text=self.canReceive.Controllers[self.id][3]/1000)
+            self.FuelMVTime2.config(text=self.canReceive.Controllers[self.id][2]/1000)
+            self.IGN1Time2.config(text=self.canReceive.Controllers[self.id][4]/1000)
+            self.IGN2Time2.config(text=self.canReceive.Controllers[self.id][5]/1000)
 
 def isfloat(x):
     try:
@@ -1495,15 +1501,18 @@ def isint(x):
 """
 Starts Code
 """
-GUI = Main()
+
+if CanStatus:
+    canReceive = CanReceive(channel='can0', bustype='socketcan')
+
+GUI = Main(canReceive)
 # GUI.run()
 GUIThread = Thread(target=GUI.run)
 GUIThread.daemon = True
-if CanStatus:
-    can_receive = CanReceive()
-    can_receive_thread = Thread(target=can_receive.run)
-    can_receive_thread.daemon = True
+
 #
 GUIThread.start()
 if CanStatus:
-    can_receive_thread.start()
+    canReceive_thread = Thread(target=canReceive.run)
+    canReceive_thread.daemon = True
+    canReceive_thread.start()
